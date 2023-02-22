@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+	<PropertyGroup>
+		<Version>0.0.1</Version>
+		<Authors>Raypro</Authors>
+		<Description>Tgs GameInterface Endorphina Client</Description>
+		<PackageProjectUrl>https://gitlab.com/rayprosoft/tgs-gameinterface-endorphinaservice</PackageProjectUrl>
+		<RepositoryUrl>https://gitlab.com/rayprosoft/tgs-gameinterface-endorphinaservice.git</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageTags>Tgs GameInterface EndorphinaService</PackageTags>
+	</PropertyGroup>
+
+
+	<ItemGroup>
+    <None Remove="gameinterfaceendorphinaservice.proto" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.49.0" />
+		<PackageReference Include="Grpc.Net.ClientFactory" Version="2.49.0" />
+		<PackageReference Include="Grpc.Tools" Version="2.50.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="PhoenixToolkits.Protobuf.ExtendTypes" Version="0.0.6" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Protobuf Include="gameinterfaceendorphinaservice.proto">
+	    <GrpcServices>Client</GrpcServices>
+	  </Protobuf>
+	</ItemGroup>
+
+</Project>
