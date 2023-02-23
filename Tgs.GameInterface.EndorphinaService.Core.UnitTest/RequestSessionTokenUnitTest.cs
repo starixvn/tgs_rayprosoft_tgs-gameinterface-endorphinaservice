@@ -94,7 +94,7 @@ public class RequestSessionTokenUnitTest
             Arg.Any<CancellationToken>())
         .ConfigureAwait(false);
 
-        Assert.IsNull(actual);
+        Assert.IsNull(actual.Token);
     }
 
     [TestMethod]
@@ -136,7 +136,7 @@ public class RequestSessionTokenUnitTest
             Arg.Any<CancellationToken>())
         .ConfigureAwait(false);
 
-        Assert.IsNull(actual);
+        Assert.IsNull(actual.Token);
     }
 
     [TestMethod]
@@ -178,7 +178,7 @@ public class RequestSessionTokenUnitTest
             Arg.Any<CancellationToken>())
         .ConfigureAwait(false);
 
-        Assert.IsNull(actual);
+        Assert.IsNull(actual.Token);
     }
 
     [TestMethod]
@@ -220,7 +220,7 @@ public class RequestSessionTokenUnitTest
             Arg.Any<CancellationToken>())
         .ConfigureAwait(false);
 
-        Assert.IsNull(actual);
+        Assert.IsNull(actual.Token);
     }
 
     [TestMethod]
@@ -262,6 +262,6 @@ public class RequestSessionTokenUnitTest
             Arg.Any<CancellationToken>())
         .ConfigureAwait(false);
 
-        Assert.IsNull(actual);
+        Assert.IsNull(actual.Token);
     }
 }

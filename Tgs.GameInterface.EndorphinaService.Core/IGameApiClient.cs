@@ -65,7 +65,7 @@ public interface IGameApiClient
         string transactionId,
         CancellationToken cancellationToken = default);
 
-    ValueTask<RequestSessionTokenResult?> RequestSessionTokenAsync(
+    ValueTask<RequestSessionTokenResult> RequestSessionTokenAsync(
         Uri apiUrl,
         string merchantId,
         string secretKey,
