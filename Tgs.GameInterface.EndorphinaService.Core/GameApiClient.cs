@@ -346,12 +346,7 @@ internal class GameApiClient : IGameApiClient
 
         var jsonNode = JsonNode.Parse(ResponseMessage);
 
-        var active = jsonNode!["active"]!.GetValue<bool>();
-
-        if (active)
-            return true;
-
-        return false;
+        return jsonNode!["active"]!.GetValue<bool>();
     }
 
     public async ValueTask<GameSessionStatisticsResult> GameSessionStatisticsAsync(Uri apiUrl, string merchantId, string secretKey, string token, CancellationToken cancellationToken = default)
