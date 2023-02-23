@@ -14,7 +14,6 @@ public class RequestSessionTokenUnitTest
         var apiUrl = new Uri("https://test.endorphina.network");
         var merchantId = "1494";
         var secretKey = "9BC9E97FFCD74B16B87BD6FA82C8C2AF";
-        var providerId = "ENDORPHINA";
         var gameId = "endorphina_MinotaurDice";
         var currency = "CNY";
         var username = "4ucmqplxb029";
@@ -42,7 +41,6 @@ public class RequestSessionTokenUnitTest
             apiUrl: apiUrl,
             merchantId: merchantId,
             secretKey: secretKey,
-            providerId: providerId,
             gameId: gameId,
             currency: currency,
             username: username,
@@ -61,7 +59,6 @@ public class RequestSessionTokenUnitTest
         var apiUrl = new Uri("https://test.endorphina.network");
         var merchantId = "1494";
         var secretKey = "9BC9E97FFCD74B16B87BD6FA82C8C2AF";
-        var providerId = "ENDORPHINA";
         var gameId = "endorphina2_Rabbits@ENDORPHINA";
         var currency = "CNY";
         var username = "4ucmqplxb000";
@@ -87,7 +84,6 @@ public class RequestSessionTokenUnitTest
             apiUrl: apiUrl,
             merchantId: merchantId,
             secretKey: secretKey,
-            providerId: providerId,
             gameId: gameId,
             currency: currency,
             username: username,
@@ -103,7 +99,6 @@ public class RequestSessionTokenUnitTest
         var apiUrl = new Uri("https://test.endorphina.network");
         var merchantId = "1494";
         var secretKey = "9BC9E97FFCD74B16B87BD6FA82C8C2AF";
-        var providerId = "ENDORPHINA";
         var gameId = "endorphina_MinotaurDice";
         var currency = "CNY";
         var username = "4ucmqplxb029";
@@ -129,7 +124,6 @@ public class RequestSessionTokenUnitTest
             apiUrl: apiUrl,
             merchantId: merchantId,
             secretKey: secretKey,
-            providerId: providerId,
             gameId: gameId,
             currency: currency,
             username: username,
@@ -145,7 +139,6 @@ public class RequestSessionTokenUnitTest
         var apiUrl = new Uri("https://test.endorphina.network");
         var merchantId = "1494";
         var secretKey = "9BC9E97FFCD74B16B87BD6FA82C8C2AF";
-        var providerId = "ENDORPHINA";
         var gameId = "endorphina2_Rabbits@ENDORPHINA";
         var currency = "AAA";
         var username = "4ucmqplxb029";
@@ -171,7 +164,6 @@ public class RequestSessionTokenUnitTest
             apiUrl: apiUrl,
             merchantId: merchantId,
             secretKey: secretKey,
-            providerId: providerId,
             gameId: gameId,
             currency: currency,
             username: username,
@@ -187,7 +179,6 @@ public class RequestSessionTokenUnitTest
         var apiUrl = new Uri("https://test.endorphina.network");
         var merchantId = "1494";
         var secretKey = "9BC9E97FFCD74B16B87BD6FA82C8C2AF";
-        var providerId = "ENDORPHINA";
         var gameId = "endorphina2_Rabbits@ENDORPHINA";
         var currency = "CNY";
         var username = "4ucmqplxb029";
@@ -213,7 +204,6 @@ public class RequestSessionTokenUnitTest
             apiUrl: apiUrl,
             merchantId: merchantId,
             secretKey: secretKey,
-            providerId: providerId,
             gameId: gameId,
             currency: currency,
             username: username,
@@ -228,8 +218,7 @@ public class RequestSessionTokenUnitTest
     {
         var apiUrl = new Uri("https://test.endorphina.network");
         var merchantId = "1494";
-        var secretKey = "9BC9E97FFCD74B16B87BD6FA82C8C2AF";
-        var providerId = "ENDORPHINA";
+        var secretKey = "9BC9E97FFCD74B16B87BD6FA82C8C2AF";        
         var gameId = "endorphina2_Rabbits@ENDORPHINA";
         var currency = "CNY";
         var username = "4ucmqplxkuyd";
@@ -254,8 +243,7 @@ public class RequestSessionTokenUnitTest
         var actual = await sut.RequestSessionTokenAsync(
             apiUrl: apiUrl,
             merchantId: merchantId,
-            secretKey: secretKey,
-            providerId: providerId,
+            secretKey: secretKey,            
             gameId: gameId,
             currency: currency,
             username: username,

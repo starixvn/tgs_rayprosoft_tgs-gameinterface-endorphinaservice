@@ -57,7 +57,6 @@ public interface IGameInterfaceEndorphinaClient
         Uri apiUrl,
         string merchantId,
         string secretKey,
-        string providerId,
         string gameId,
         string currency,
         string username,

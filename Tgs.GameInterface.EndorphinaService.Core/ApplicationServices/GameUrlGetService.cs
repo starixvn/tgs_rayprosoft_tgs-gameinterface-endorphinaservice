@@ -17,14 +17,10 @@ internal class GameUrlGetService : IGetService<GameUrlQuery, string?>
                 query.ApiUrl,
                 query.MerchantId,
                 query.SecretKey,
-                query.ProviderId,
                 query.GameId,
                 query.Currency,
                 query.Username,
                 cancellationToken).ConfigureAwait(false);
-
-        if (result is null)
-            return null;
 
         var token = result.Token;
 
