@@ -1,0 +1,93 @@
+﻿syntax = "proto3";
+
+import "phoenix/protobuf/decimal.proto";
+
+option csharp_namespace = "Tgs.GameInterface.EndorphinaService.Protos";
+
+package GameInterfaceEndorphinaService;
+
+// The greeting service definition.
+service  GameInterfaceEndorphinaService{
+  // Sends a greeting
+  rpc PlayerCreate (PlayerCreateRequest) returns (BaseReply);
+  rpc PlayerBalance (PlayerBalanceRequest) returns (PlayerBalanceReply);
+  rpc PlayerKick (PlayerKickRequest) returns (BaseReply);
+  rpc FundIn (FundRequest) returns (FundReply);
+  rpc FundOut (FundRequest) returns (FundReply);
+  rpc FundStatus(FundStatusRequest) returns (FundStatusReply);  
+  rpc GameUrl (GameUrlRequest) returns (GameUrlReply);
+}
+
+// The request message containing the user's name.
+message PlayerCreateRequest {
+	string api_url = 1;
+	string merchant_id = 2;
+	string secret_key = 3;
+	string username = 4;
+}
+
+message PlayerBalanceRequest {
+	string api_url = 1;
+	string merchant_id = 2;
+	string secret_key = 3;
+	string username = 4;
+	string currency = 5;
+}
+
+message PlayerKickRequest {
+	string api_url = 1;
+	string merchant_id = 2;
+	string secret_key = 3;
+	string username = 4;
+}
+
+message FundRequest {
+	string api_url = 1;
+	string merchant_id = 2;
+	string secret_key = 3;
+	string username = 4;
+	string currency = 5;
+	string ref_transaction_code = 6;
+	phoenix.protobuf.DecimalValue amount = 7;
+}
+
+message FundStatusRequest {
+	string api_url = 1;
+	string merchant_id = 2;
+	string secret_key = 3;
+	string transactionId = 4;
+}
+
+message GameUrlRequest {
+	string api_url = 1;
+	string merchant_id = 2;
+	string secret_key = 3;
+	string provider_id = 4;
+	string game_id = 5;
+	string currency = 6;
+	string username = 7;
+}
+
+// The response message containing the greetings.
+message BaseReply{
+	bool status = 1;
+}
+
+message PlayerBalanceReply {
+	bool is_player_exist = 1;
+	phoenix.protobuf.DecimalValue balance = 2;
+}
+
+message FundReply {
+	string ref_transaction_code = 1;
+    string transaction_id = 2;
+    phoenix.protobuf.DecimalValue balance = 3; 
+}
+
+message FundStatusReply {
+	bool is_order_exist = 1;
+}
+
+message GameUrlReply {	
+	string game_url = 1;
+}
