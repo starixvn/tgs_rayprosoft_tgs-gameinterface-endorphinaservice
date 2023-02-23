@@ -24,8 +24,8 @@ internal class FundOutGetService : IGetService<FundOutQuery, FundResult>
             cancellationToken: cancellationToken).ConfigureAwait(false);
 
         return new FundResult(
-            RefTransactionCode: result.RefTransactionCode,
-            TransactionId: result.TransactionId,
-            Balance: result.Balance);
+            RefTransactionCode: result?.RefTransactionCode ?? string.Empty,
+            TransactionId: result?.TransactionId ?? string.Empty,
+            Balance: result?.Balance ?? 0M);
     }
 }

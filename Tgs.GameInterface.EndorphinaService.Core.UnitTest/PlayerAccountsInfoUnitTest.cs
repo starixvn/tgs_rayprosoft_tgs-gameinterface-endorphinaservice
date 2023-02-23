@@ -9,7 +9,7 @@ namespace Tgs.GameInterface.EndorphinaService.Core.UnitTest;
 public class PlayerAccountsInfoUnitTest
 {
     [TestMethod]
-    public async Task 取得玩家帳號資訊成功()
+    public async Task 玩家存在且有Deposit()
     {
         var apiUrl = new Uri("https://test.endorphina.network");
         var username = "4ucmqplxb029";
@@ -18,7 +18,15 @@ public class PlayerAccountsInfoUnitTest
 
         var url = new Uri(apiUrl, $"/api/casino/player/{username}/accounts");
 
-        var response = "[{\"balance\":\"1000.00\",\"currency\":\"CNY\",\"type\":\"CASH\"}]";
+        var response = """
+            [
+                {
+                    "balance": "1000.00",
+                    "currency": "CNY",
+                    "type": "CASH"
+                }
+            ]
+            """;
         var handler = new MockHttpMessageHandler();
         _ = handler.Expect(HttpMethod.Get, url.ToString())
                         .Respond(HttpStatusCode.OK, new StringContent(response));
@@ -39,5 +47,75 @@ public class PlayerAccountsInfoUnitTest
 
         Assert.IsNotNull(actual);
         Assert.AreEqual(1, actual.Length);
+    }
+
+    [TestMethod]
+    public async Task 玩家不存在()
+    {
+        var apiUrl = new Uri("https://test.endorphina.network");
+        var username = "4ucmqplxhfoe";
+        var merchantId = "1494";
+        var secretKey = "9BC9E97FFCD74B16B87BD6FA82C8C2AF";
+
+        var url = new Uri(apiUrl, $"/api/casino/player/{username}/accounts");
+
+        var response = """
+            {
+                "code": "NOT_FOUND_EXCEPTION",
+                "message": "Player not found"
+            }
+            """;
+        var handler = new MockHttpMessageHandler();
+        _ = handler.Expect(HttpMethod.Get, url.ToString())
+                        .Respond(HttpStatusCode.NotFound, new StringContent(response));
+
+        var fakeHttpClient = handler.ToHttpClient();
+        var fakeLog = NullLogger<GameApiClient>.Instance;
+
+        var sut = new GameApiClient(fakeHttpClient, fakeLog);
+
+        var actual = await sut.PlayerAccountsInfoAsync(
+            apiUrl: apiUrl,
+            merchantId: merchantId,
+            secretKey: secretKey,
+            username: username,
+            Arg.Any<CancellationToken>())
+        .ToArrayAsync(Arg.Any<CancellationToken>())
+        .ConfigureAwait(false);
+
+        Assert.AreEqual(1, actual.Length);
+        Assert.AreEqual(null, actual[0]);
+    }
+
+    [TestMethod]
+    public async Task 玩家存在但沒Deposit()
+    {
+        var apiUrl = new Uri("https://test.endorphina.network");
+        var username = "4ucmqplxkuyd";
+        var merchantId = "1494";
+        var secretKey = "9BC9E97FFCD74B16B87BD6FA82C8C2AF";
+
+        var url = new Uri(apiUrl, $"/api/casino/player/{username}/accounts");
+
+        var response = "[]";
+        var handler = new MockHttpMessageHandler();
+        _ = handler.Expect(HttpMethod.Get, url.ToString())
+                        .Respond(HttpStatusCode.OK, new StringContent(response));
+
+        var fakeHttpClient = handler.ToHttpClient();
+        var fakeLog = NullLogger<GameApiClient>.Instance;
+
+        var sut = new GameApiClient(fakeHttpClient, fakeLog);
+
+        var actual = await sut.PlayerAccountsInfoAsync(
+            apiUrl: apiUrl,
+            merchantId: merchantId,
+            secretKey: secretKey,
+            username: username,
+            Arg.Any<CancellationToken>())
+        .ToArrayAsync(Arg.Any<CancellationToken>())
+        .ConfigureAwait(false);
+
+        Assert.AreEqual(0, actual.Length);        
     }
 }

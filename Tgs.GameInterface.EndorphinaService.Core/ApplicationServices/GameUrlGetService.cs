@@ -23,6 +23,9 @@ internal class GameUrlGetService : IGetService<GameUrlQuery, string?>
                 query.Username,
                 cancellationToken).ConfigureAwait(false);
 
+        if (result is null)
+            return null;
+
         var token = result.Token;
 
         var sign = EndorphinaHasher.ComputeHash($"{token}{query.SecretKey}");

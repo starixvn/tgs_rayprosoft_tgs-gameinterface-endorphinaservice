@@ -23,13 +23,13 @@ internal class PlayerBalanceGetService : IGetService<PlayerBalanceQuery, PlayerB
             .ToArrayAsync(cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        if (result is null)
+        if (result.Length == 1 && result[0] is null)
             return new PlayerBalanceResult(false, null);
 
         if (result.Length == 0)
             return new PlayerBalanceResult(true, null);
 
-        var accountInfo = result.FirstOrDefault(x => x.Currency == query.Currency);
+        var accountInfo = result.FirstOrDefault(x => x!.Currency == query.Currency);
 
         if (accountInfo == null)
             return new PlayerBalanceResult(true, null);

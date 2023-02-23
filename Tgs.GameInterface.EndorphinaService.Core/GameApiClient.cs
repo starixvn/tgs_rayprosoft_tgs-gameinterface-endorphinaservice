@@ -7,7 +7,9 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging;
+using Tgs.GameInterface.EndorphinaService.Core.Exceptions;
 using Tgs.GameInterface.EndorphinaService.Core.Models;
+using Tgs.GameInterface.SkywindService.Core.Models;
 
 namespace Tgs.GameInterface.EndorphinaService.Core;
 
@@ -28,29 +30,42 @@ internal class GameApiClient : IGameApiClient
     {
         var url = new Uri(apiUrl, $"/api/casino/player/{username}");
 
-        try
-        {
-            var jsonNode = await PostJsonAsync(
+        (bool IsSuccess, HttpStatusCode StatusCode, string ResponseMessage) = await PostJsonAsync(
                 url,
                 merchantId,
                 secretKey,
                 new Dictionary<string, string>(),
                 "PlayerRegistration",
                 cancellationToken).ConfigureAwait(false);
-        }
-        catch (HttpRequestException ex)
+
+        if (!IsSuccess)
         {
-            if (ex.StatusCode == HttpStatusCode.Conflict)
-                _logger.LogError("Player with username '{username}' already exists", username);
-            throw;
-        }
-        catch
-        {
-            throw;
+            _logger.LogError("LogOn:{logOn} ApiUrl:{url} StatusCode:{statusCode} Response:{responseMessage}",
+               DateTime.Now.ToString("o"),
+               url.ToString(),
+               $"{StatusCode}({(int)StatusCode})",
+               ResponseMessage);
+
+            try
+            {
+                var errorCodeResponse = JsonSerializer.Deserialize<ErrorCodeResponse>(ResponseMessage);
+
+                if (errorCodeResponse is null)
+                    throw new NetworkException(StatusCode, ResponseMessage);
+
+                if (StatusCode == HttpStatusCode.Conflict && errorCodeResponse.Code is EndorphinaErrorCode.ALREADY_EXIST_EXCEPTION)
+                    return;
+
+                throw new GameProviderResponseErrorException(ResponseMessage);
+            }
+            catch
+            {
+                throw new NetworkException(StatusCode, ResponseMessage);
+            }
         }
     }
 
-    public async ValueTask<DepositResult> DepositAsync(Uri apiUrl, string merchantId, string secretKey, string username, string refTransactionCode, decimal amount, string currency, CancellationToken cancellationToken = default)
+    public async ValueTask<DepositResult?> DepositAsync(Uri apiUrl, string merchantId, string secretKey, string username, string refTransactionCode, decimal amount, string currency, CancellationToken cancellationToken = default)
     {
         var url = new Uri(apiUrl, $"/api/casino/deposit/{username}");
 
@@ -60,13 +75,47 @@ internal class GameApiClient : IGameApiClient
             ["currency"] = currency,
         };
 
-        var jsonNode = await PostFormAsync(
+        (bool IsSuccess, HttpStatusCode StatusCode, string ResponseMessage) = await PostFormAsync(
             url,
             merchantId,
             secretKey,
             parameters,
             "Deposit",
             cancellationToken).ConfigureAwait(false);
+
+        if (!IsSuccess)
+        {
+            _logger.LogError("LogOn:{logOn} ApiUrl:{url} StatusCode:{statusCode} Response:{responseMessage}",
+               DateTime.Now.ToString("o"),
+               url.ToString(),
+               $"{StatusCode}({(int)StatusCode})",
+               ResponseMessage);
+
+            var errorCodeResponse = JsonSerializer.Deserialize<ErrorCodeResponse>(ResponseMessage);
+
+            try
+            {
+                if (errorCodeResponse is null)
+                    throw new NetworkException(StatusCode, ResponseMessage);
+
+                if (StatusCode is HttpStatusCode.NotFound && errorCodeResponse.Code is EndorphinaErrorCode.NOT_FOUND_EXCEPTION)
+                    return null;
+
+                if (StatusCode is HttpStatusCode.Forbidden
+                    && (errorCodeResponse.Code is EndorphinaErrorCode.ILLEGAL_ARGUMENT_EXCEPTION
+                        or EndorphinaErrorCode.INSUFFICIENT_FUNDS_EXCEPTION
+                        or EndorphinaErrorCode.INVALID_CURRENCY_EXCEPTION))
+                    return null;
+
+                throw new GameProviderResponseErrorException(ResponseMessage);
+            }
+            catch
+            {
+                throw new NetworkException(StatusCode, ResponseMessage);
+            }
+        }
+
+        var jsonNode = JsonNode.Parse(ResponseMessage);
 
         var transactionId = jsonNode!["transactionId"]!.ToString();
 
@@ -75,7 +124,7 @@ internal class GameApiClient : IGameApiClient
         return new DepositResult(refTransactionCode, transactionId, balance);
     }
 
-    public async ValueTask<WithdrawResult> WithdrawAsync(Uri apiUrl, string merchantId, string secretKey, string username, string refTransactionCode, decimal amount, string currency, CancellationToken cancellationToken = default)
+    public async ValueTask<WithdrawResult?> WithdrawAsync(Uri apiUrl, string merchantId, string secretKey, string username, string refTransactionCode, decimal amount, string currency, CancellationToken cancellationToken = default)
     {
         var url = new Uri(apiUrl, $"/api/casino/withdraw/{username}");
 
@@ -85,13 +134,47 @@ internal class GameApiClient : IGameApiClient
             ["currency"] = currency,
         };
 
-        var jsonNode = await PostFormAsync(
+        (bool IsSuccess, HttpStatusCode StatusCode, string ResponseMessage) = await PostFormAsync(
             url,
             merchantId,
             secretKey,
             parameters,
             "Withdraw",
             cancellationToken).ConfigureAwait(false);
+
+        if (!IsSuccess)
+        {
+            _logger.LogError("LogOn:{logOn} ApiUrl:{url} StatusCode:{statusCode} Response:{responseMessage}",
+               DateTime.Now.ToString("o"),
+               url.ToString(),
+               $"{StatusCode}({(int)StatusCode})",
+               ResponseMessage);
+
+            try
+            {
+                var errorCodeResponse = JsonSerializer.Deserialize<ErrorCodeResponse>(ResponseMessage);
+
+                if (errorCodeResponse is null)
+                    throw new NetworkException(StatusCode, ResponseMessage);
+
+                if (StatusCode is HttpStatusCode.NotFound && errorCodeResponse.Code is EndorphinaErrorCode.NOT_FOUND_EXCEPTION)
+                    return null;
+
+                if (StatusCode is HttpStatusCode.Forbidden
+                    && (errorCodeResponse.Code is EndorphinaErrorCode.ILLEGAL_ARGUMENT_EXCEPTION
+                        or EndorphinaErrorCode.INSUFFICIENT_FUNDS_EXCEPTION
+                        or EndorphinaErrorCode.INVALID_CURRENCY_EXCEPTION))
+                    return null;
+
+                throw new GameProviderResponseErrorException(ResponseMessage);
+            }
+            catch
+            {
+                throw new NetworkException(StatusCode, ResponseMessage);
+            }
+        }
+
+        var jsonNode = JsonNode.Parse(ResponseMessage);
 
         var transactionId = jsonNode!["transactionId"]!.ToString();
 
@@ -104,39 +187,48 @@ internal class GameApiClient : IGameApiClient
     {
         var url = new Uri(apiUrl, $"/api/casino/payments/{transactionId}");
 
-        try
-        {
-            var jsonNode = await GetAsync(
-                url,
-                merchantId,
-                secretKey,
-                new Dictionary<string, string>(),
-                "SinglePayment",
-                cancellationToken).ConfigureAwait(false);
+        (bool IsSuccess, HttpStatusCode StatusCode, string ResponseMessage) = await GetAsync(
+            url,
+            merchantId,
+            secretKey,
+            new Dictionary<string, string>(),
+            "SinglePayment",
+            cancellationToken).ConfigureAwait(false);
 
-            return true;
-        }
-        catch (HttpRequestException ex)
+        if (!IsSuccess)
         {
-            if (ex.StatusCode == HttpStatusCode.NotFound)
+            _logger.LogError("LogOn:{logOn} ApiUrl:{url} StatusCode:{statusCode} Response:{responseMessage}",
+               DateTime.Now.ToString("o"),
+               url.ToString(),
+               $"{StatusCode}({(int)StatusCode})",
+               ResponseMessage);
+
+            try
             {
-                _logger.LogError("PlayerPayment not found");
-                return false;
-            }
+                var errorCodeResponse = JsonSerializer.Deserialize<ErrorCodeResponse>(ResponseMessage);
 
-            throw;
+                if (errorCodeResponse is null)
+                    throw new NetworkException(StatusCode, ResponseMessage);
+
+                if (StatusCode is HttpStatusCode.NotFound && errorCodeResponse.Code is EndorphinaErrorCode.NOT_FOUND_EXCEPTION)
+                    return false;
+
+                throw new GameProviderResponseErrorException(ResponseMessage);
+            }
+            catch
+            {
+                throw new NetworkException(StatusCode, ResponseMessage);
+            }
         }
-        catch
-        {
-            throw;
-        }
+
+        return true;
     }
 
-    public async IAsyncEnumerable<PlayerAccountsInfoResult> PlayerAccountsInfoAsync(Uri apiUrl, string merchantId, string secretKey, string username, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    public async IAsyncEnumerable<PlayerAccountsInfoResult?> PlayerAccountsInfoAsync(Uri apiUrl, string merchantId, string secretKey, string username, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var url = new Uri(apiUrl, $"/api/casino/player/{username}/accounts");
 
-        var jsonNode = await GetAsync(
+        (bool IsSuccess, HttpStatusCode StatusCode, string ResponseMessage) = await GetAsync(
             url,
             merchantId,
             secretKey,
@@ -144,27 +236,48 @@ internal class GameApiClient : IGameApiClient
             "PlayerAccountsInfo",
             cancellationToken).ConfigureAwait(false);
 
-        var accountsInfo = jsonNode.AsArray();
-
-        if (accountsInfo is null || !accountsInfo.Any())
-            yield break;
-
-        var results = accountsInfo.Select(x => new PlayerAccountsInfoResult()
+        if (!IsSuccess)
         {
-            Balance = decimal.Parse(x!["balance"]!.ToString()),
-            Currency = x!["currency"]!.ToString()
-        }) ?? Enumerable.Empty<PlayerAccountsInfoResult>();
+            _logger.LogError("LogOn:{logOn} ApiUrl:{url} StatusCode:{statusCode} Response:{responseMessage}",
+               DateTime.Now.ToString("o"),
+               url.ToString(),
+               $"{StatusCode}({(int)StatusCode})",
+               ResponseMessage);
 
-        if (!results.Any())
-            yield break;
+            var errorCodeResponse = JsonSerializer.Deserialize<ErrorCodeResponse>(ResponseMessage);
 
-        foreach (var item in results)
+            if (errorCodeResponse is null)
+                throw new NetworkException(StatusCode, ResponseMessage);
+
+            if (StatusCode is HttpStatusCode.NotFound && errorCodeResponse.Code is EndorphinaErrorCode.NOT_FOUND_EXCEPTION)
+                yield return null;
+        }
+        else
         {
-            yield return item;
+            var jsonNode = JsonNode.Parse(ResponseMessage)!;
+
+            var accountsInfo = jsonNode.AsArray();
+
+            if (accountsInfo is null || !accountsInfo.Any())
+                yield break;
+
+            var results = accountsInfo.Select(x => new PlayerAccountsInfoResult()
+            {
+                Balance = decimal.Parse(x!["balance"]!.ToString()),
+                Currency = x!["currency"]!.ToString()
+            }) ?? Enumerable.Empty<PlayerAccountsInfoResult>();
+
+            if (!results.Any())
+                yield break;
+
+            foreach (var item in results)
+            {
+                yield return item;
+            }
         }
     }
 
-    public async ValueTask<RequestSessionTokenResult> RequestSessionTokenAsync(Uri apiUrl, string merchantId, string secretKey, string providerId, string gameId, string currency, string username, CancellationToken cancellationToken = default)
+    public async ValueTask<RequestSessionTokenResult?> RequestSessionTokenAsync(Uri apiUrl, string merchantId, string secretKey, string providerId, string gameId, string currency, string username, CancellationToken cancellationToken = default)
     {
         var url = new Uri(apiUrl, $"/api/casino/launch/{username}");
 
@@ -175,13 +288,44 @@ internal class GameApiClient : IGameApiClient
             ["currency"] = currency,
         };
 
-        var jsonNode = await PostFormAsync(
+        (bool IsSuccess, HttpStatusCode StatusCode, string ResponseMessage) = await PostFormAsync(
             url,
             merchantId,
             secretKey,
             parameters,
             "RequestSessionToken",
             cancellationToken).ConfigureAwait(false);
+
+        if (!IsSuccess)
+        {
+            _logger.LogError("LogOn:{logOn} ApiUrl:{url} StatusCode:{statusCode} Response:{responseMessage}",
+               DateTime.Now.ToString("o"),
+               url.ToString(),
+               $"{StatusCode}({(int)StatusCode})",
+               ResponseMessage);
+
+            try
+            {
+                var errorCodeResponse = JsonSerializer.Deserialize<ErrorCodeResponse>(ResponseMessage);
+
+                if (errorCodeResponse is null)
+                    throw new NetworkException(StatusCode, ResponseMessage);
+
+                if (StatusCode is HttpStatusCode.NotFound && errorCodeResponse.Code is EndorphinaErrorCode.NOT_FOUND_EXCEPTION)
+                    return null;
+
+                if (StatusCode is HttpStatusCode.Forbidden && errorCodeResponse.Code is EndorphinaErrorCode.ILLEGAL_ARGUMENT_EXCEPTION)
+                    return null;
+
+                throw new GameProviderResponseErrorException(ResponseMessage);
+            }
+            catch
+            {
+                throw new NetworkException(StatusCode, ResponseMessage);
+            }
+        }
+
+        var jsonNode = JsonNode.Parse(ResponseMessage);
 
         var token = jsonNode!["token"]!.ToString();
 
@@ -201,13 +345,39 @@ internal class GameApiClient : IGameApiClient
     {
         var url = new Uri(apiUrl, $"/api/casino/kick/{username}");
 
-        var jsonNode = await PostJsonAsync(
+        (bool IsSuccess, HttpStatusCode StatusCode, string ResponseMessage) = await PostJsonAsync(
             url,
             merchantId,
             secretKey,
             new Dictionary<string, string>(),
             "KickPlayer",
             cancellationToken).ConfigureAwait(false);
+
+        if (!IsSuccess)
+        {
+            _logger.LogError("LogOn:{logOn} ApiUrl:{url} StatusCode:{statusCode} Response:{responseMessage}",
+               DateTime.Now.ToString("o"),
+               url.ToString(),
+               $"{StatusCode}({(int)StatusCode})",
+               ResponseMessage);
+
+            try
+            {
+                var errorCodeResponse = JsonSerializer.Deserialize<ErrorCodeResponse>(ResponseMessage);
+
+                if (errorCodeResponse is null)
+                    throw new NetworkException(StatusCode, ResponseMessage);
+
+                if (errorCodeResponse.Code is not EndorphinaErrorCode.NOT_FOUND_EXCEPTION)
+                    throw new GameProviderResponseErrorException(ResponseMessage);
+            }
+            catch
+            {
+                throw new NetworkException(StatusCode, ResponseMessage);
+            }
+        }
+
+        var jsonNode = JsonNode.Parse(ResponseMessage);
 
         var active = jsonNode!["active"]!.GetValue<bool>();
 
@@ -217,17 +387,45 @@ internal class GameApiClient : IGameApiClient
         return false;
     }
 
-    public async ValueTask<GameSessionStatisticsResult> GameSessionStatisticsAsync(Uri apiUrl, string merchantId, string secretKey, string token, CancellationToken cancellationToken = default)
+    public async ValueTask<GameSessionStatisticsResult?> GameSessionStatisticsAsync(Uri apiUrl, string merchantId, string secretKey, string token, CancellationToken cancellationToken = default)
     {
         var url = new Uri(apiUrl, $"/api/casino/stats/{token}");
 
-        var jsonNode = await GetAsync(
+        (bool IsSuccess, HttpStatusCode StatusCode, string ResponseMessage) = await GetAsync(
             url,
             merchantId,
             secretKey,
             new Dictionary<string, string>(),
             "GameSessionStatistics",
             cancellationToken).ConfigureAwait(false);
+
+        if (!IsSuccess)
+        {
+            _logger.LogError("LogOn:{logOn} ApiUrl:{url} StatusCode:{statusCode} Response:{responseMessage}",
+               DateTime.Now.ToString("o"),
+               url.ToString(),
+               $"{StatusCode}({(int)StatusCode})",
+               ResponseMessage);
+
+            try
+            {
+                var errorCodeResponse = JsonSerializer.Deserialize<ErrorCodeResponse>(ResponseMessage);
+
+                if (errorCodeResponse is null)
+                    throw new NetworkException(StatusCode, ResponseMessage);
+
+                if (StatusCode is HttpStatusCode.NotFound && errorCodeResponse.Code is EndorphinaErrorCode.NOT_FOUND_EXCEPTION)
+                    return null;
+
+                throw new GameProviderResponseErrorException(ResponseMessage);
+            }
+            catch
+            {
+                throw new NetworkException(StatusCode, ResponseMessage);
+            }
+        }
+
+        var jsonNode = JsonNode.Parse(ResponseMessage);
 
         return new GameSessionStatisticsResult
         {
@@ -242,17 +440,39 @@ internal class GameApiClient : IGameApiClient
         };
     }
 
-    public async ValueTask<GameSessionInfoResult> GameSessionInfoAsync(Uri apiUrl, string merchantId, string secretKey, string token, CancellationToken cancellationToken = default)
+    public async ValueTask<GameSessionInfoResult?> GameSessionInfoAsync(Uri apiUrl, string merchantId, string secretKey, string token, CancellationToken cancellationToken = default)
     {
         var url = new Uri(apiUrl, $"/api/casino/sessions/{token}");
 
-        var jsonNode = await GetAsync(
+        (bool IsSuccess, HttpStatusCode StatusCode, string ResponseMessage) = await GetAsync(
             url,
             merchantId,
             secretKey,
             new Dictionary<string, string>(),
             "GameSessionInfo",
             cancellationToken).ConfigureAwait(false);
+
+        if (!IsSuccess)
+        {
+            _logger.LogError("LogOn:{logOn} ApiUrl:{url} StatusCode:{statusCode} Response:{responseMessage}",
+               DateTime.Now.ToString("o"),
+               url.ToString(),
+               $"{StatusCode}({(int)StatusCode})",
+               ResponseMessage);
+
+            var errorCodeResponse = JsonSerializer.Deserialize<ErrorCodeResponse>(ResponseMessage);
+
+            if (errorCodeResponse is null)
+                throw new NetworkException(StatusCode, ResponseMessage);
+
+            if (StatusCode is HttpStatusCode.NotFound && errorCodeResponse.Code is EndorphinaErrorCode.NOT_FOUND_EXCEPTION)
+            {
+                _logger.LogError(errorCodeResponse.Message);
+                return null;
+            }
+        }
+
+        var jsonNode = JsonNode.Parse(ResponseMessage);
 
         var jsonGame = jsonNode!["game"]!.AsObject();
         var gameName = jsonGame!["name"]!.ToString();
@@ -270,7 +490,7 @@ internal class GameApiClient : IGameApiClient
         };
     }
 
-    private async ValueTask<JsonNode> GetAsync(Uri apiUrl, string merchantId, string secretKey, IEnumerable<KeyValuePair<string, string>> parameters, string logPrefix, CancellationToken cancellationToken = default)
+    private async ValueTask<(bool IsSuccess, HttpStatusCode StatusCode, string ResponseMessage)> GetAsync(Uri apiUrl, string merchantId, string secretKey, IEnumerable<KeyValuePair<string, string>> parameters, string logPrefix, CancellationToken cancellationToken = default)
     {
         logPrefix = $"{nameof(GameApiClient)}.{logPrefix}".ToLower();
 
@@ -325,12 +545,10 @@ internal class GameApiClient : IGameApiClient
 
         _logger.LogInformation("{apiLogEvent}", JsonSerializer.Serialize(apiLogEvent));
 
-        _ = httpResponseMessage.EnsureSuccessStatusCode();
-
-        return JsonNode.Parse(responseMessage)!;
+        return (httpResponseMessage.IsSuccessStatusCode, httpResponseMessage.StatusCode, responseMessage);
     }
 
-    private async ValueTask<JsonNode> PostJsonAsync(Uri apiUrl, string merchantId, string secretKey, IEnumerable<KeyValuePair<string, string>> parameters, string logPrefix, CancellationToken cancellationToken = default)
+    private async ValueTask<(bool IsSuccess, HttpStatusCode StatusCode, string ResponseMessage)> PostJsonAsync(Uri apiUrl, string merchantId, string secretKey, IEnumerable<KeyValuePair<string, string>> parameters, string logPrefix, CancellationToken cancellationToken = default)
     {
         logPrefix = $"{nameof(GameApiClient)}.{logPrefix}".ToLower();
 
@@ -378,12 +596,10 @@ internal class GameApiClient : IGameApiClient
 
         _logger.LogInformation("{apiLogEvent}", JsonSerializer.Serialize(apiLogEvent));
 
-        _ = httpResponseMessage.EnsureSuccessStatusCode();
-
-        return JsonNode.Parse(responseMessage)!;
+        return (httpResponseMessage.IsSuccessStatusCode, httpResponseMessage.StatusCode, responseMessage);
     }
 
-    private async ValueTask<JsonNode> PostFormAsync(Uri apiUrl, string merchantId, string secretKey, IEnumerable<KeyValuePair<string, string>> parameters, string logPrefix, CancellationToken cancellationToken = default)
+    private async ValueTask<(bool IsSuccess, HttpStatusCode StatusCode, string ResponseMessage)> PostFormAsync(Uri apiUrl, string merchantId, string secretKey, IEnumerable<KeyValuePair<string, string>> parameters, string logPrefix, CancellationToken cancellationToken = default)
     {
         logPrefix = $"{nameof(GameApiClient)}.{logPrefix}".ToLower();
 
@@ -431,8 +647,6 @@ internal class GameApiClient : IGameApiClient
 
         _logger.LogInformation("{apiLogEvent}", JsonSerializer.Serialize(apiLogEvent));
 
-        _ = httpResponseMessage.EnsureSuccessStatusCode();
-
-        return JsonNode.Parse(responseMessage)!;
+        return (httpResponseMessage.IsSuccessStatusCode, httpResponseMessage.StatusCode, responseMessage);
     }
 }

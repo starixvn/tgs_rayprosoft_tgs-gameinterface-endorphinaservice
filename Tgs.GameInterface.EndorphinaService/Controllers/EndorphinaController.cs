@@ -44,7 +44,7 @@ public class EndorphinaController : ControllerBase
     }
 
     /// <summary>
-    /// Funds the out asynchronous.
+    /// Funds the out asynchronous.(Tgs -> Gp)
     /// </summary>
     /// <param name="service">The service.</param>
     /// <param name="source">The source.</param>
@@ -66,8 +66,8 @@ public class EndorphinaController : ControllerBase
     /// </remarks>
     [HttpPost("fund/out", Name = "FundOut")]
     public async ValueTask<FundResultViewModel> FundOutAsync(
-            [FromServices] IGetService<FundOutQuery, FundResult> service,
-            FundViewModel source)
+        [FromServices] IGetService<FundOutQuery, FundResult> service,
+        FundViewModel source)
     {
         var query = new FundOutQuery(
             ApiUrl: source.ApiUrl,
@@ -91,7 +91,7 @@ public class EndorphinaController : ControllerBase
     }
 
     /// <summary>
-    /// Funds the in asynchronous.
+    /// Funds the in asynchronous.(GP -> Tgs)
     /// </summary>
     /// <param name="service">The service.</param>
     /// <param name="source">The source.</param>
@@ -303,8 +303,8 @@ public class EndorphinaController : ControllerBase
     ///         }
     /// </remarks>
     [HttpPost("gameSessionStatistics")]
-    public async ValueTask<GameSessionStatisticsResultViewModel> GameSessionStatisticsAsync(
-        [FromServices] IGetService<GameSessionStatisticsQuery, GameSessionStatisticsResult> service,
+    public async ValueTask<GameSessionStatisticsResultViewModel?> GameSessionStatisticsAsync(
+        [FromServices] IGetService<GameSessionStatisticsQuery, GameSessionStatisticsResult?> service,
         GameSessionStatisticsQueryViewModel source)
     {
         var result = await service.GetAsync(new GameSessionStatisticsQuery(
@@ -313,6 +313,9 @@ public class EndorphinaController : ControllerBase
             source.SecretKey,
             source.Token))
         .ConfigureAwait(false);
+
+        if (result is null)
+            return null;
 
         return new GameSessionStatisticsResultViewModel
         {
@@ -346,8 +349,8 @@ public class EndorphinaController : ControllerBase
     ///         }
     /// </remarks>
     [HttpPost("gameSessionInfo")]
-    public async ValueTask<GameSessionInfoResultViewModel> GameSessionInfoAsync(
-        [FromServices] IGetService<GameSessionInfoQuery, GameSessionInfoResult> service,
+    public async ValueTask<GameSessionInfoResultViewModel?> GameSessionInfoAsync(
+        [FromServices] IGetService<GameSessionInfoQuery, GameSessionInfoResult?> service,
         GameSessionInfoQueryViewModel source)
     {
         var result = await service.GetAsync(new GameSessionInfoQuery(
@@ -357,6 +360,9 @@ public class EndorphinaController : ControllerBase
                 source.Token),
                 HttpContext.RequestAborted)
             .ConfigureAwait(false);
+
+        if (result is null)
+            return null;
 
         return new GameSessionInfoResultViewModel
         {
