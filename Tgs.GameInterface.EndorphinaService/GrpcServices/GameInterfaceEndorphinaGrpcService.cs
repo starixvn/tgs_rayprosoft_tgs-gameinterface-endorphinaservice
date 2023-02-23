@@ -165,7 +165,6 @@ internal class GameInterfaceEndorphinaGrpcService : GameInterfaceEndorphinaServi
             ApiUrl: new(request.ApiUrl),
             MerchantId: request.MerchantId,
             SecretKey: request.SecretKey,
-            ProviderId: request.ProviderId,
             GameId: request.GameId,
             Currency: request.Currency,
             Username: request.Username);

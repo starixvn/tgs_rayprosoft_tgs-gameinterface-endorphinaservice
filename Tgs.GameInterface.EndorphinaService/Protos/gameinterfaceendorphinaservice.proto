@@ -61,11 +61,10 @@ message FundStatusRequest {
 message GameUrlRequest {
 	string api_url = 1;
 	string merchant_id = 2;
-	string secret_key = 3;
-	string provider_id = 4;
-	string game_id = 5;
-	string currency = 6;
-	string username = 7;
+	string secret_key = 3;	
+	string game_id = 4;
+	string currency = 5;
+	string username = 6;
 }
 
 // The response message containing the greetings.

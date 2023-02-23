@@ -247,13 +247,13 @@ internal class GameApiClient : IGameApiClient
         return new PlayerBalanceResult(true, accountInfo.Balance);
     }
 
-    public async ValueTask<RequestSessionTokenResult> RequestSessionTokenAsync(Uri apiUrl, string merchantId, string secretKey, string providerId, string gameId, string currency, string username, CancellationToken cancellationToken = default)
+    public async ValueTask<RequestSessionTokenResult> RequestSessionTokenAsync(Uri apiUrl, string merchantId, string secretKey, string gameId, string currency, string username, CancellationToken cancellationToken = default)
     {
         var url = new Uri(apiUrl, $"/api/casino/launch/{username}");
 
         var parameters = new Dictionary<string, string>
         {
-            ["provider"] = providerId,
+            ["provider"] = "ENDORPHINA",
             ["game"] = gameId,
             ["currency"] = currency,
         };

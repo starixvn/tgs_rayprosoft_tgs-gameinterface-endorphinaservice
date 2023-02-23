@@ -228,7 +228,6 @@ public class EndorphinaController : ControllerBase
     ///             "apiUrl": "https://test.endorphina.network",
     ///             "merchantId": "1494",
     ///             "secretKey": "9BC9E97FFCD74B16B87BD6FA82C8C2AF",
-    ///             "providerId": "ENDORPHINA",
     ///             "gameId": "endorphina2_Rabbits",
     ///             "currency": "CNY",
     ///             "username": "4ucmqplxb029"
@@ -244,7 +243,6 @@ public class EndorphinaController : ControllerBase
                 model.ApiUrl,
                 model.MerchantId,
                 model.SecretKey,
-                model.ProviderId,
                 model.GameId,
                 model.Currency,
                 model.Username))

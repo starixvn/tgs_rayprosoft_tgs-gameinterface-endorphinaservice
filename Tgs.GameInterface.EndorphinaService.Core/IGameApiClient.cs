@@ -68,8 +68,7 @@ public interface IGameApiClient
     ValueTask<RequestSessionTokenResult> RequestSessionTokenAsync(
         Uri apiUrl,
         string merchantId,
-        string secretKey,
-        string providerId,
+        string secretKey,        
         string gameId,
         string currency,
         string username,
