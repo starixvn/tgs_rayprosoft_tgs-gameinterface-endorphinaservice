@@ -3,9 +3,7 @@ public record GameSessionInfoResult
 {
     public string Id { get; init; } = default!;
     public string Username { get; init; } = default!;
-
     public string GameName { get; init; } = default!;
-
     public string Currency { get; init; } = default!;
     public string AccountType { get; init; } = default!;
     public DateTimeOffset Created { get; init; }

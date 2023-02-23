@@ -1,5 +1,5 @@
 ﻿namespace Tgs.GameInterface.EndorphinaService.Core.ApplicationServices;
-public record GameSessionInfoResult
+public record GameSessionInfo
 {
     public string Id { get; init; } = default!;
     public string Username { get; init; } = default!;

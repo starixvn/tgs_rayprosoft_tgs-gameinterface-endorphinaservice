@@ -1,4 +1,5 @@
-﻿using Tgs.GameInterface.EndorphinaService.Core.Models;
+﻿using Tgs.GameInterface.EndorphinaService.Core.ApplicationServices;
+using Tgs.GameInterface.EndorphinaService.Core.Models;
 
 namespace Tgs.GameInterface.EndorphinaService.Core;
 
@@ -29,11 +30,12 @@ public interface IGameApiClient
     /// <param name="username">The username.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns></returns>
-    IAsyncEnumerable<PlayerAccountsInfoResult?> PlayerAccountsInfoAsync(
+    ValueTask<PlayerBalanceResult> PlayerAccountsInfoAsync(
         Uri apiUrl,
         string merchantId,
         string secretKey,
         string username,
+        string currency,
         CancellationToken cancellationToken = default);
 
     ValueTask<DepositResult?> DepositAsync(
@@ -80,14 +82,14 @@ public interface IGameApiClient
         string username,
         CancellationToken cancellationToken = default);
 
-    ValueTask<GameSessionStatisticsResult?> GameSessionStatisticsAsync(
+    ValueTask<GameSessionStatisticsResult> GameSessionStatisticsAsync(
         Uri apiUrl,
         string merchantId,
         string secretKey,
         string token,
         CancellationToken cancellationToken = default);
 
-    ValueTask<GameSessionInfoResult?> GameSessionInfoAsync(
+    ValueTask<GameSessionInfoResult> GameSessionInfoAsync(
         Uri apiUrl,
         string merchantId,
         string secretKey,

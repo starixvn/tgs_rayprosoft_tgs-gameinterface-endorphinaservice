@@ -2,7 +2,7 @@
 
 namespace Tgs.GameInterface.EndorphinaService.Core.ApplicationServices;
 
-internal class GameSessionStatisticsGetService : IGetService<GameSessionStatisticsQuery, GameSessionStatisticsResult?>
+internal class GameSessionStatisticsGetService : IGetService<GameSessionStatisticsQuery, GameSessionStatisticsInfo>
 {
     private readonly IGameApiClient _client;
 
@@ -11,7 +11,7 @@ internal class GameSessionStatisticsGetService : IGetService<GameSessionStatisti
         _client = client ?? throw new ArgumentNullException(nameof(client));
     }
 
-    public async ValueTask<GameSessionStatisticsResult?> GetAsync(GameSessionStatisticsQuery query, CancellationToken cancellationToken = default)
+    public async ValueTask<GameSessionStatisticsInfo> GetAsync(GameSessionStatisticsQuery query, CancellationToken cancellationToken = default)
     {
         var result = await _client
             .GameSessionStatisticsAsync(
@@ -22,10 +22,7 @@ internal class GameSessionStatisticsGetService : IGetService<GameSessionStatisti
                 cancellationToken)
             .ConfigureAwait(false);
 
-        if (result is null)
-            return null;
-
-        return new GameSessionStatisticsResult
+        return new GameSessionStatisticsInfo
         {
             Bet = result.Bet,
             Win = result.Win,

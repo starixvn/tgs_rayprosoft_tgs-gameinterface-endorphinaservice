@@ -15,7 +15,7 @@ public class PlayerAccountsInfoUnitTest
         var username = "4ucmqplxb029";
         var merchantId = "1494";
         var secretKey = "9BC9E97FFCD74B16B87BD6FA82C8C2AF";
-
+        var currency = "CNY";
         var url = new Uri(apiUrl, $"/api/casino/player/{username}/accounts");
 
         var response = """
@@ -41,12 +41,13 @@ public class PlayerAccountsInfoUnitTest
             merchantId: merchantId,
             secretKey: secretKey,
             username: username,
+            currency: currency,
             Arg.Any<CancellationToken>())
-        .ToArrayAsync(Arg.Any<CancellationToken>())
         .ConfigureAwait(false);
 
         Assert.IsNotNull(actual);
-        Assert.AreEqual(1, actual.Length);
+        Assert.IsTrue(actual.IsPlayerExist);
+        Assert.AreEqual(1000M, actual.Balance);
     }
 
     [TestMethod]
@@ -56,6 +57,7 @@ public class PlayerAccountsInfoUnitTest
         var username = "4ucmqplxhfoe";
         var merchantId = "1494";
         var secretKey = "9BC9E97FFCD74B16B87BD6FA82C8C2AF";
+        var currency = "CNY";
 
         var url = new Uri(apiUrl, $"/api/casino/player/{username}/accounts");
 
@@ -79,12 +81,12 @@ public class PlayerAccountsInfoUnitTest
             merchantId: merchantId,
             secretKey: secretKey,
             username: username,
+            currency: currency,
             Arg.Any<CancellationToken>())
-        .ToArrayAsync(Arg.Any<CancellationToken>())
         .ConfigureAwait(false);
 
-        Assert.AreEqual(1, actual.Length);
-        Assert.AreEqual(null, actual[0]);
+        Assert.IsFalse(actual.IsPlayerExist);
+        Assert.IsNull(actual.Balance);
     }
 
     [TestMethod]
@@ -94,6 +96,7 @@ public class PlayerAccountsInfoUnitTest
         var username = "4ucmqplxkuyd";
         var merchantId = "1494";
         var secretKey = "9BC9E97FFCD74B16B87BD6FA82C8C2AF";
+        var currency = "CNY";
 
         var url = new Uri(apiUrl, $"/api/casino/player/{username}/accounts");
 
@@ -112,10 +115,11 @@ public class PlayerAccountsInfoUnitTest
             merchantId: merchantId,
             secretKey: secretKey,
             username: username,
-            Arg.Any<CancellationToken>())
-        .ToArrayAsync(Arg.Any<CancellationToken>())
+            currency: currency,
+            Arg.Any<CancellationToken>())        
         .ConfigureAwait(false);
 
-        Assert.AreEqual(0, actual.Length);        
+        Assert.IsTrue(actual.IsPlayerExist);
+        Assert.IsNull(actual.Balance);
     }
 }

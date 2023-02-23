@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using RichardSzalay.MockHttp;
+using Tgs.GameInterface.EndorphinaService.Core.Exceptions;
 
 namespace Tgs.GameInterface.EndorphinaService.Core.UnitTest;
 
@@ -48,11 +49,11 @@ public class GameSessionStatisticsUnitTest
         .ConfigureAwait(false);
 
         Assert.IsNotNull(actual);
-        Assert.AreEqual(2M, actual.Bet);        
+        Assert.AreEqual(2M, actual.Bet);
     }
 
     [TestMethod]
-    public async Task Session_Not_Found()
+    public void Session_Not_Found()
     {
         var apiUrl = new Uri("https://test.endorphina.network");
         var merchantId = "1494";
@@ -76,14 +77,12 @@ public class GameSessionStatisticsUnitTest
 
         var sut = new GameApiClient(fakeHttpClient, fakeLog);
 
-        var actual = await sut.GameSessionStatisticsAsync(
+        Assert.ThrowsExceptionAsync<GameProviderResponseErrorException>(async () => await sut.GameSessionStatisticsAsync(
             apiUrl: apiUrl,
             merchantId: merchantId,
             secretKey: secretKey,
             token: token,
             Arg.Any<CancellationToken>())
-        .ConfigureAwait(false);
-
-        Assert.IsNull(actual);
+        .ConfigureAwait(false));
     }
 }

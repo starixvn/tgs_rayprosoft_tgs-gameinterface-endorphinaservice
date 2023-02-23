@@ -2,11 +2,11 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Mime;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging;
+using Tgs.GameInterface.EndorphinaService.Core.ApplicationServices;
 using Tgs.GameInterface.EndorphinaService.Core.Exceptions;
 using Tgs.GameInterface.EndorphinaService.Core.Models;
 using Tgs.GameInterface.SkywindService.Core.Models;
@@ -224,7 +224,7 @@ internal class GameApiClient : IGameApiClient
         return true;
     }
 
-    public async IAsyncEnumerable<PlayerAccountsInfoResult?> PlayerAccountsInfoAsync(Uri apiUrl, string merchantId, string secretKey, string username, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    public async ValueTask<PlayerBalanceResult> PlayerAccountsInfoAsync(Uri apiUrl, string merchantId, string secretKey, string username, string currency, CancellationToken cancellationToken = default)
     {
         var url = new Uri(apiUrl, $"/api/casino/player/{username}/accounts");
 
@@ -250,31 +250,31 @@ internal class GameApiClient : IGameApiClient
                 throw new NetworkException(StatusCode, ResponseMessage);
 
             if (StatusCode is HttpStatusCode.NotFound && errorCodeResponse.Code is EndorphinaErrorCode.NOT_FOUND_EXCEPTION)
-                yield return null;
+                return new PlayerBalanceResult(IsPlayerExist: false, Balance: null);
         }
-        else
+
+        var jsonNode = JsonNode.Parse(ResponseMessage)!;
+
+        var accountsInfo = jsonNode.AsArray();
+
+        if (accountsInfo is null || !accountsInfo.Any())
+            return new PlayerBalanceResult(IsPlayerExist: true, Balance: null);
+
+        var results = accountsInfo.Select(x => new PlayerAccountsInfoResult()
         {
-            var jsonNode = JsonNode.Parse(ResponseMessage)!;
+            Balance = decimal.Parse(x!["balance"]!.ToString()),
+            Currency = x!["currency"]!.ToString()
+        }) ?? Enumerable.Empty<PlayerAccountsInfoResult>();
 
-            var accountsInfo = jsonNode.AsArray();
+        if (!results.Any())
+            return new PlayerBalanceResult(IsPlayerExist: true, Balance: null);
 
-            if (accountsInfo is null || !accountsInfo.Any())
-                yield break;
+        var accountInfo = results.FirstOrDefault(x => x.Currency == currency);
 
-            var results = accountsInfo.Select(x => new PlayerAccountsInfoResult()
-            {
-                Balance = decimal.Parse(x!["balance"]!.ToString()),
-                Currency = x!["currency"]!.ToString()
-            }) ?? Enumerable.Empty<PlayerAccountsInfoResult>();
+        if (accountInfo == null)
+            return new PlayerBalanceResult(IsPlayerExist: true, Balance: null);
 
-            if (!results.Any())
-                yield break;
-
-            foreach (var item in results)
-            {
-                yield return item;
-            }
-        }
+        return new PlayerBalanceResult(true, accountInfo.Balance);
     }
 
     public async ValueTask<RequestSessionTokenResult?> RequestSessionTokenAsync(Uri apiUrl, string merchantId, string secretKey, string providerId, string gameId, string currency, string username, CancellationToken cancellationToken = default)
@@ -387,7 +387,7 @@ internal class GameApiClient : IGameApiClient
         return false;
     }
 
-    public async ValueTask<GameSessionStatisticsResult?> GameSessionStatisticsAsync(Uri apiUrl, string merchantId, string secretKey, string token, CancellationToken cancellationToken = default)
+    public async ValueTask<GameSessionStatisticsResult> GameSessionStatisticsAsync(Uri apiUrl, string merchantId, string secretKey, string token, CancellationToken cancellationToken = default)
     {
         var url = new Uri(apiUrl, $"/api/casino/stats/{token}");
 
@@ -407,22 +407,12 @@ internal class GameApiClient : IGameApiClient
                $"{StatusCode}({(int)StatusCode})",
                ResponseMessage);
 
-            try
-            {
-                var errorCodeResponse = JsonSerializer.Deserialize<ErrorCodeResponse>(ResponseMessage);
+            var errorCodeResponse = JsonSerializer.Deserialize<ErrorCodeResponse>(ResponseMessage);
 
-                if (errorCodeResponse is null)
-                    throw new NetworkException(StatusCode, ResponseMessage);
-
-                if (StatusCode is HttpStatusCode.NotFound && errorCodeResponse.Code is EndorphinaErrorCode.NOT_FOUND_EXCEPTION)
-                    return null;
-
-                throw new GameProviderResponseErrorException(ResponseMessage);
-            }
-            catch
-            {
+            if (errorCodeResponse is null)
                 throw new NetworkException(StatusCode, ResponseMessage);
-            }
+
+            throw new GameProviderResponseErrorException(ResponseMessage);
         }
 
         var jsonNode = JsonNode.Parse(ResponseMessage);
@@ -440,7 +430,7 @@ internal class GameApiClient : IGameApiClient
         };
     }
 
-    public async ValueTask<GameSessionInfoResult?> GameSessionInfoAsync(Uri apiUrl, string merchantId, string secretKey, string token, CancellationToken cancellationToken = default)
+    public async ValueTask<GameSessionInfoResult> GameSessionInfoAsync(Uri apiUrl, string merchantId, string secretKey, string token, CancellationToken cancellationToken = default)
     {
         var url = new Uri(apiUrl, $"/api/casino/sessions/{token}");
 
@@ -465,11 +455,7 @@ internal class GameApiClient : IGameApiClient
             if (errorCodeResponse is null)
                 throw new NetworkException(StatusCode, ResponseMessage);
 
-            if (StatusCode is HttpStatusCode.NotFound && errorCodeResponse.Code is EndorphinaErrorCode.NOT_FOUND_EXCEPTION)
-            {
-                _logger.LogError(errorCodeResponse.Message);
-                return null;
-            }
+            throw new GameProviderResponseErrorException(ResponseMessage);
         }
 
         var jsonNode = JsonNode.Parse(ResponseMessage);

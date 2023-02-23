@@ -1,5 +1,5 @@
 ﻿namespace Tgs.GameInterface.EndorphinaService.Core.ApplicationServices;
-public record GameSessionStatisticsResult
+public record GameSessionStatisticsInfo
 {
     public decimal Bet { get; init; }
     public decimal Win { get; init; }

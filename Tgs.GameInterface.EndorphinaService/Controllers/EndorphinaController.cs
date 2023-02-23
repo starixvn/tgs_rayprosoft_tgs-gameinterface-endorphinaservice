@@ -303,8 +303,8 @@ public class EndorphinaController : ControllerBase
     ///         }
     /// </remarks>
     [HttpPost("gameSessionStatistics")]
-    public async ValueTask<GameSessionStatisticsResultViewModel?> GameSessionStatisticsAsync(
-        [FromServices] IGetService<GameSessionStatisticsQuery, GameSessionStatisticsResult?> service,
+    public async ValueTask<GameSessionStatisticsResultViewModel> GameSessionStatisticsAsync(
+        [FromServices] IGetService<GameSessionStatisticsQuery, GameSessionStatisticsInfo> service,
         GameSessionStatisticsQueryViewModel source)
     {
         var result = await service.GetAsync(new GameSessionStatisticsQuery(
@@ -313,9 +313,6 @@ public class EndorphinaController : ControllerBase
             source.SecretKey,
             source.Token))
         .ConfigureAwait(false);
-
-        if (result is null)
-            return null;
 
         return new GameSessionStatisticsResultViewModel
         {
@@ -349,8 +346,8 @@ public class EndorphinaController : ControllerBase
     ///         }
     /// </remarks>
     [HttpPost("gameSessionInfo")]
-    public async ValueTask<GameSessionInfoResultViewModel?> GameSessionInfoAsync(
-        [FromServices] IGetService<GameSessionInfoQuery, GameSessionInfoResult?> service,
+    public async ValueTask<GameSessionInfoResultViewModel> GameSessionInfoAsync(
+        [FromServices] IGetService<GameSessionInfoQuery, GameSessionInfo> service,
         GameSessionInfoQueryViewModel source)
     {
         var result = await service.GetAsync(new GameSessionInfoQuery(
@@ -360,9 +357,6 @@ public class EndorphinaController : ControllerBase
                 source.Token),
                 HttpContext.RequestAborted)
             .ConfigureAwait(false);
-
-        if (result is null)
-            return null;
 
         return new GameSessionInfoResultViewModel
         {

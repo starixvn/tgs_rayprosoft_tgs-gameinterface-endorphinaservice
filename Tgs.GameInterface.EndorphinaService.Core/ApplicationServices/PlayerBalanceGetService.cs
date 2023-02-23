@@ -19,23 +19,10 @@ internal class PlayerBalanceGetService : IGetService<PlayerBalanceQuery, PlayerB
                 merchantId: query.MerchantId,
                 secretKey: query.SecretKey,
                 username: query.Username,
+                currency: query.Currency,
                 cancellationToken: cancellationToken)
-            .ToArrayAsync(cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        if (result.Length == 1 && result[0] is null)
-            return new PlayerBalanceResult(false, null);
-
-        if (result.Length == 0)
-            return new PlayerBalanceResult(true, null);
-
-        var accountInfo = result.FirstOrDefault(x => x!.Currency == query.Currency);
-
-        if (accountInfo == null)
-            return new PlayerBalanceResult(true, null);
-
-        return new PlayerBalanceResult(
-             IsPlayerExist: true,
-             Balance: accountInfo.Balance);
+        return result;
     }
 }
