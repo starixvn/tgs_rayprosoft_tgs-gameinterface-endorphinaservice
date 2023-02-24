@@ -433,8 +433,10 @@ internal class GameApiClient : IGameApiClient
             Currency = jsonNode!["currency"]!.ToString(),
             AccountType = jsonNode!["accountType"]!.ToString(),
             Created = DateTimeOffset.Parse(jsonNode!["created"]!.ToString()),
-            Closed = DateTimeOffset.Parse(jsonNode!["closed"]!.ToString()),
-            ErrorsPending = jsonNode!["errorsPending"]!.ToString()
+            Closed = jsonNode!["closed"] == null
+                ? null
+                : DateTimeOffset.Parse(jsonNode!["closed"]!.ToString()),
+            ErrorsPending = jsonNode!["errorsPending"]!.GetValue<int>()
         };
     }
 

@@ -368,4 +368,54 @@ public class EndorphinaController : ControllerBase
             ErrorsPending = result.ErrorsPending,
         };
     }
+
+    /// <summary>
+    /// Games the history settled asynchronous.
+    /// </summary>
+    /// <param name="service">The service.</param>
+    /// <param name="model">The model.</param>
+    /// <returns></returns>
+    /// <remarks>
+    /// <b>Example</b><br />
+    ///
+    ///     Post
+    ///
+    ///         {
+    ///             "apiUrl": "https://test.endorphina.network",
+    ///             "merchantId": "1494",
+    ///             "secretKey": "9BC9E97FFCD74B16B87BD6FA82C8C2AF",
+    ///             "token": "AA8BB60F5A134264BE838CF6EBA7C8F1"
+    ///         }
+    /// </remarks>
+    [HttpPost("game/history/settled", Name = "GameHistorySettled")]
+    public async ValueTask<GameHistorySettledResultViewModel> GameHistorySettledAsync(
+        [FromServices] IGetService<GameHistorySettledQuery, GameHistorySettledResult> service,
+        GameHistorySettledViewModel model)
+    {
+        var query = new GameHistorySettledQuery(
+            ApiUrl: model.ApiUrl,
+            MerchantId: model.MerchantId,
+            SecretKey: model.SecretKey,
+            Token: model.Token);
+
+        var gameRecord = await service
+                .GetAsync(
+                    query: query,
+                    cancellationToken: HttpContext.RequestAborted)
+                .ConfigureAwait(false);
+
+        return new GameHistorySettledResultViewModel(
+                 PlayerCode: gameRecord.PlayerCode,
+                 ExternalRoundId: gameRecord.ExternalRoundId,
+                 IsClosed: gameRecord.IsClosed,
+                 ExternalCreatedOn: gameRecord.ExternalCreatedOn,
+                 ExternalClosedOn: gameRecord.ExternalClosedOn,
+                 Bet: gameRecord.Bet,
+                 ValidBet: gameRecord.ValidBet,
+                 PlayerWinLoss: gameRecord.PlayerWinLoss,
+                 Turnover: gameRecord.Turnover,
+                 Settle: gameRecord.Settle,
+                 AdditionalData: gameRecord.AdditionalData,
+                 ExternalGameId: gameRecord.ExternalGameId);
+    }
 }

@@ -14,6 +14,8 @@ internal class GameInterfaceEndorphinaGrpcService : GameInterfaceEndorphinaServi
     private readonly IGetService<FundOutQuery, FundResult> _fundOutService;
     private readonly IGetService<FundStatusQuery, bool> _fundStatusService;
     private readonly IGetService<GameUrlQuery, string?> _gameUrlService;
+    private readonly IGetService<GameSessionInfoQuery, GameSessionInfo> _gameSessionService;
+    private readonly IGetService<GameSessionStatisticsQuery, GameSessionStatisticsInfo> _gameSessionStatisticsService;
 
     public GameInterfaceEndorphinaGrpcService(
         ICommandService<PlayerCreateCommand> playerCreateService,
@@ -22,7 +24,9 @@ internal class GameInterfaceEndorphinaGrpcService : GameInterfaceEndorphinaServi
         IGetService<FundInQuery, FundResult> fundInService,
         IGetService<FundOutQuery, FundResult> fundOutService,
         IGetService<FundStatusQuery, bool> fundStatusService,
-        IGetService<GameUrlQuery, string?> gameUrlService)
+        IGetService<GameUrlQuery, string?> gameUrlService,
+        IGetService<GameSessionInfoQuery, GameSessionInfo> gameSessionService,
+        IGetService<GameSessionStatisticsQuery, GameSessionStatisticsInfo> gameSessionStatisticsService)
     {
         _playerCreateService = playerCreateService ?? throw new ArgumentNullException(nameof(playerCreateService));
         _playerBalanceService = playerBalanceService ?? throw new ArgumentNullException(nameof(playerBalanceService));
@@ -31,6 +35,8 @@ internal class GameInterfaceEndorphinaGrpcService : GameInterfaceEndorphinaServi
         _fundOutService = fundOutService ?? throw new ArgumentNullException(nameof(fundOutService));
         _fundStatusService = fundStatusService ?? throw new ArgumentNullException(nameof(fundStatusService));
         _gameUrlService = gameUrlService ?? throw new ArgumentNullException(nameof(gameUrlService));
+        _gameSessionService = gameSessionService ?? throw new ArgumentNullException(nameof(gameSessionService));
+        _gameSessionStatisticsService = gameSessionStatisticsService ?? throw new ArgumentNullException(nameof(gameSessionStatisticsService));
     }
 
     public override async Task<BaseReply> PlayerCreate(PlayerCreateRequest request, ServerCallContext context)

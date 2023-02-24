@@ -7,6 +7,6 @@ public record GameSessionInfoResult
     public string Currency { get; init; } = default!;
     public string AccountType { get; init; } = default!;
     public DateTimeOffset Created { get; init; }
-    public DateTimeOffset Closed { get; init; }
-    public string ErrorsPending { get; init; } = default!;
+    public DateTimeOffset? Closed { get; init; }
+    public int ErrorsPending { get; init; }
 }
