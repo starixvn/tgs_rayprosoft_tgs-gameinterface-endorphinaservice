@@ -61,4 +61,20 @@ public interface IGameInterfaceEndorphinaClient
         string currency,
         string username,
         CancellationToken cancellationToken = default);
+
+    ValueTask<GameTokenReply> GameTokenAsync(
+        Uri apiUrl,
+        string merchantId,
+        string secretKey,
+        string gameId,
+        string currency,
+        string username,
+        CancellationToken cancellationToken = default);
+
+    ValueTask<GameHistorySettledReply> GameHistorySettledAsync(
+        Uri apiUrl,
+        string merchantId,
+        string secretKey,
+        string token,
+        CancellationToken cancellationToken = default);
 }
