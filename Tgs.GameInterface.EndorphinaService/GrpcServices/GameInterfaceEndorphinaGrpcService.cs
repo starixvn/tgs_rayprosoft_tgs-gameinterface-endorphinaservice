@@ -1,4 +1,5 @@
-﻿using Grpc.Core;
+﻿using Google.Protobuf.WellKnownTypes;
+using Grpc.Core;
 using Tgs.GameInterface.EndorphinaService.Core.ApplicationServices;
 using Tgs.GameInterface.EndorphinaService.Protos;
 using Tgs.ServiceUtility;
@@ -14,8 +15,8 @@ internal class GameInterfaceEndorphinaGrpcService : GameInterfaceEndorphinaServi
     private readonly IGetService<FundOutQuery, FundResult> _fundOutService;
     private readonly IGetService<FundStatusQuery, bool> _fundStatusService;
     private readonly IGetService<GameUrlQuery, string?> _gameUrlService;
-    private readonly IGetService<GameSessionInfoQuery, GameSessionInfo> _gameSessionService;
-    private readonly IGetService<GameSessionStatisticsQuery, GameSessionStatisticsInfo> _gameSessionStatisticsService;
+    private readonly IGetService<GameTokenQuery, GameTokenResult> _gameTokenService;
+    private readonly IGetService<GameHistorySettledQuery, GameHistorySettledResult> _gameHistoryService;
 
     public GameInterfaceEndorphinaGrpcService(
         ICommandService<PlayerCreateCommand> playerCreateService,
@@ -25,8 +26,8 @@ internal class GameInterfaceEndorphinaGrpcService : GameInterfaceEndorphinaServi
         IGetService<FundOutQuery, FundResult> fundOutService,
         IGetService<FundStatusQuery, bool> fundStatusService,
         IGetService<GameUrlQuery, string?> gameUrlService,
-        IGetService<GameSessionInfoQuery, GameSessionInfo> gameSessionService,
-        IGetService<GameSessionStatisticsQuery, GameSessionStatisticsInfo> gameSessionStatisticsService)
+        IGetService<GameTokenQuery, GameTokenResult> gameTokenService,
+        IGetService<GameHistorySettledQuery, GameHistorySettledResult> gameHistoryService)
     {
         _playerCreateService = playerCreateService ?? throw new ArgumentNullException(nameof(playerCreateService));
         _playerBalanceService = playerBalanceService ?? throw new ArgumentNullException(nameof(playerBalanceService));
@@ -35,8 +36,8 @@ internal class GameInterfaceEndorphinaGrpcService : GameInterfaceEndorphinaServi
         _fundOutService = fundOutService ?? throw new ArgumentNullException(nameof(fundOutService));
         _fundStatusService = fundStatusService ?? throw new ArgumentNullException(nameof(fundStatusService));
         _gameUrlService = gameUrlService ?? throw new ArgumentNullException(nameof(gameUrlService));
-        _gameSessionService = gameSessionService ?? throw new ArgumentNullException(nameof(gameSessionService));
-        _gameSessionStatisticsService = gameSessionStatisticsService ?? throw new ArgumentNullException(nameof(gameSessionStatisticsService));
+        _gameTokenService = gameTokenService ?? throw new ArgumentNullException(nameof(gameTokenService));
+        _gameHistoryService = gameHistoryService ?? throw new ArgumentNullException(nameof(gameHistoryService));
     }
 
     public override async Task<BaseReply> PlayerCreate(PlayerCreateRequest request, ServerCallContext context)
@@ -182,6 +183,57 @@ internal class GameInterfaceEndorphinaGrpcService : GameInterfaceEndorphinaServi
         return new GameUrlReply()
         {
             GameUrl = result
+        };
+    }
+
+    public override async Task<GameTokenReply> GameToken(GameTokenRequest request, ServerCallContext context)
+    {
+        var query = new GameTokenQuery(
+            ApiUrl: new(request.ApiUrl),
+            MerchantId: request.MerchantId,
+            SecretKey: request.SecretKey,
+            GameId: request.GameId,
+            Currency: request.Currency,
+            Username: request.Username);
+
+        var result = await _gameTokenService
+            .GetAsync(query, cancellationToken: context.CancellationToken)
+            .ConfigureAwait(false);
+
+        return new GameTokenReply()
+        {
+            Token = result.Token,
+            Game = result.Game,
+            Username = result.Username
+        };
+    }
+
+    public override async Task<GameHistorySettledReply> GameHistorySettled(GameHistorySettledRequest request, ServerCallContext context)
+    {
+        var query = new GameHistorySettledQuery(
+            ApiUrl: new Uri(request.ApiUrl),
+            MerchantId: request.MerchantId,
+            SecretKey: request.SecretKey,
+            Token: request.Token);
+
+        var result = await _gameHistoryService
+            .GetAsync(query, cancellationToken: context.CancellationToken)
+            .ConfigureAwait(false);
+
+        return new GameHistorySettledReply()
+        {
+            Bet = result.Bet,
+            ValidBet = result.ValidBet,
+            Settle = result.Settle,
+            Turnover = result.Turnover,
+            PlayerWinLoss = result.PlayerWinLoss,
+            IsClosed = result.IsClosed,
+            ExternalGameId = result.ExternalGameId,
+            ExternalRoundId = result.ExternalRoundId,
+            ExternalCreatedOn = result.ExternalCreatedOn.ToTimestamp(),
+            ExternalClosedOn = result.ExternalClosedOn!.Value.ToTimestamp(),
+            PlayerCode = result.PlayerCode,
+            AdditionalData = result.AdditionalData,
         };
     }
 }

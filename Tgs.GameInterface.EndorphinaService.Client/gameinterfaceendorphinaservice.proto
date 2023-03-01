@@ -17,8 +17,8 @@ service  GameInterfaceEndorphinaService{
   rpc FundOut (FundRequest) returns (FundReply);
   rpc FundStatus(FundStatusRequest) returns (FundStatusReply);  
   rpc GameUrl (GameUrlRequest) returns (GameUrlReply);
-  rpc GameSessionInfo (GameSessionInfoRequest) returns (GameSessionInfoReply);
-  rpc GameSessionStatistics (GameSessionStatisticsRequest) returns (GameSessionStatisticsReply);
+  rpc GameToken (GameTokenRequest) returns (GameTokenReply);
+  rpc GameHistorySettled (GameHistorySettledRequest) returns (GameHistorySettledReply);
 }
 
 // The request message containing the user's name.
@@ -70,14 +70,16 @@ message GameUrlRequest {
 	string username = 6;
 }
 
-message GameSessionInfoRequest{
+message GameTokenRequest{
 	string api_url = 1;
 	string merchant_id = 2;
 	string secret_key = 3;
-	string token = 4;
+	string game_id = 4;
+	string currency = 5;
+	string username = 6;
 }
 
-message GameSessionStatisticsRequest{
+message GameHistorySettledRequest{
 	string api_url = 1;
 	string merchant_id = 2;
 	string secret_key = 3;
@@ -108,24 +110,23 @@ message GameUrlReply {
 	string game_url = 1;
 }
 
-message GameSessionInfoReply{
-	string id = 1;
+message GameTokenReply{
+	string token = 1;
 	string username = 2;
-	string game_name = 3;
-	string currency = 4;
-	string account_type = 5;
-	google.protobuf.Timestamp created = 6;
-	google.protobuf.Timestamp closed = 7;
-	int32 errors_pending = 8; 
+	string game = 3;	
 }
 
-message GameSessionStatisticsReply{
-	phoenix.protobuf.DecimalValue bet = 1;
-	phoenix.protobuf.DecimalValue win = 2;
-	int32 games = 3;
-	phoenix.protobuf.DecimalValue jackpot_win = 4;
-	int32 jackpots = 5;
-	phoenix.protobuf.DecimalValue deposit = 6;
-	phoenix.protobuf.DecimalValue withdraw = 7;
-	int32 errors_pending = 8;
+message GameHistorySettledReply{
+	string player_code = 1;
+    string external_round_id = 2;
+	bool is_closed = 3;
+	google.protobuf.Timestamp external_created_on = 4;
+	google.protobuf.Timestamp external_closed_on = 5;
+	phoenix.protobuf.DecimalValue bet = 6;
+	phoenix.protobuf.DecimalValue valid_bet = 7;
+	phoenix.protobuf.DecimalValue player_win_loss = 8;
+	phoenix.protobuf.DecimalValue turnover = 9;
+	phoenix.protobuf.DecimalValue settle = 10;
+    string additional_data = 11;
+	string external_game_id = 12;
 }
