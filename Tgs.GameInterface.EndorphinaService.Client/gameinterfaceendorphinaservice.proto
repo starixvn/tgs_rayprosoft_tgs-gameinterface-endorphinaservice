@@ -1,6 +1,7 @@
 ﻿syntax = "proto3";
 
 import "phoenix/protobuf/decimal.proto";
+import "google/protobuf/timestamp.proto";
 
 option csharp_namespace = "Tgs.GameInterface.EndorphinaService.Protos";
 
@@ -16,6 +17,8 @@ service  GameInterfaceEndorphinaService{
   rpc FundOut (FundRequest) returns (FundReply);
   rpc FundStatus(FundStatusRequest) returns (FundStatusReply);  
   rpc GameUrl (GameUrlRequest) returns (GameUrlReply);
+  rpc GameToken (GameTokenRequest) returns (GameTokenReply);
+  rpc GameHistorySettled (GameHistorySettledRequest) returns (GameHistorySettledReply);
 }
 
 // The request message containing the user's name.
@@ -67,6 +70,22 @@ message GameUrlRequest {
 	string username = 6;
 }
 
+message GameTokenRequest{
+	string api_url = 1;
+	string merchant_id = 2;
+	string secret_key = 3;
+	string game_id = 4;
+	string currency = 5;
+	string username = 6;
+}
+
+message GameHistorySettledRequest{
+	string api_url = 1;
+	string merchant_id = 2;
+	string secret_key = 3;
+	string token = 4;
+}
+
 // The response message containing the greetings.
 message BaseReply{
 	bool status = 1;
@@ -89,4 +108,25 @@ message FundStatusReply {
 
 message GameUrlReply {	
 	string game_url = 1;
+}
+
+message GameTokenReply{
+	string token = 1;
+	string username = 2;
+	string game = 3;	
+}
+
+message GameHistorySettledReply{
+	string player_code = 1;
+    string external_round_id = 2;
+	bool is_closed = 3;
+	google.protobuf.Timestamp external_created_on = 4;
+	google.protobuf.Timestamp external_closed_on = 5;
+	phoenix.protobuf.DecimalValue bet = 6;
+	phoenix.protobuf.DecimalValue valid_bet = 7;
+	phoenix.protobuf.DecimalValue player_win_loss = 8;
+	phoenix.protobuf.DecimalValue turnover = 9;
+	phoenix.protobuf.DecimalValue settle = 10;
+    string additional_data = 11;
+	string external_game_id = 12;
 }
