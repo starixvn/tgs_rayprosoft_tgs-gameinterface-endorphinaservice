@@ -232,7 +232,7 @@ internal class GameInterfaceEndorphinaGrpcService : GameInterfaceEndorphinaServi
             ExternalRoundId = result.ExternalRoundId,
             ExternalCreatedOn = result.ExternalCreatedOn.ToTimestamp(),
             ExternalClosedOn = result.ExternalClosedOn == null
-                ? DateTimeOffset.MinValue.ToTimestamp()
+                ? DateTimeOffset.UnixEpoch.ToTimestamp()
                 : result.ExternalClosedOn.Value.ToTimestamp(),
             PlayerCode = result.PlayerCode,
             AdditionalData = result.AdditionalData,
