@@ -87,7 +87,8 @@ public class EndorphinaController : ControllerBase
         return new FundResultViewModel(
             RefTransactionCode: result.RefTransactionCode,
             TransactionId: result.TransactionId,
-            Balance: result.Balance);
+            Balance: result.Balance,
+            Response: result.Response);
     }
 
     /// <summary>
@@ -134,7 +135,8 @@ public class EndorphinaController : ControllerBase
         return new FundResultViewModel(
             RefTransactionCode: result.RefTransactionCode,
             TransactionId: result.TransactionId,
-            Balance: result.Balance);
+            Balance: result.Balance,
+            Response: result.Response);
     }
 
     /// <summary>
