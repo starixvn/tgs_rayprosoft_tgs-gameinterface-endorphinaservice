@@ -174,7 +174,8 @@ internal class GameInterfaceEndorphinaGrpcService : GameInterfaceEndorphinaServi
             SecretKey: request.SecretKey,
             GameId: request.GameId,
             Currency: request.Currency,
-            Username: request.Username);
+            Username: request.Username,
+            Language: request.Language);
 
         var result = await _gameUrlService
             .GetAsync(query, cancellationToken: context.CancellationToken)

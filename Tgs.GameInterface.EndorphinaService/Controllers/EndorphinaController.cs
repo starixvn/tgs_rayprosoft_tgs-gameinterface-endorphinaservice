@@ -230,7 +230,8 @@ public class EndorphinaController : ControllerBase
     ///             "secretKey": "9BC9E97FFCD74B16B87BD6FA82C8C2AF",
     ///             "gameId": "endorphina2_Rabbits",
     ///             "currency": "CNY",
-    ///             "username": "4ucmqplxb029"
+    ///             "username": "4ucmqplxb029",
+    ///             "language": "zh_Hant"
     ///         }
     /// </remarks>
     [HttpPost("gameurl")]
@@ -245,7 +246,8 @@ public class EndorphinaController : ControllerBase
                 model.SecretKey,
                 model.GameId,
                 model.Currency,
-                model.Username))
+                model.Username,
+                model.Language))
             .ConfigureAwait(false);
 
         return new GameUrlResultViewModel(result);

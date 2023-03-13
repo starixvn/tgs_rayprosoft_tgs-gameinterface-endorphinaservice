@@ -60,6 +60,7 @@ public interface IGameInterfaceEndorphinaClient
         string gameId,
         string currency,
         string username,
+        string language,
         CancellationToken cancellationToken = default);
 
     ValueTask<GameTokenReply> GameTokenAsync(

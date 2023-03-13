@@ -6,4 +6,5 @@ public record GameUrlQueryViewModel(
     string SecretKey,
     string GameId,
     string Currency,
-    string Username);
+    string Username,
+    string Language);

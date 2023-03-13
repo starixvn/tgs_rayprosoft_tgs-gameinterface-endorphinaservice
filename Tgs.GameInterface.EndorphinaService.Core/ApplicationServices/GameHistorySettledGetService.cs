@@ -20,7 +20,7 @@ internal class GameHistorySettledGetService : IGetService<GameHistorySettledQuer
             token: query.Token,
             cancellationToken: cancellationToken).ConfigureAwait(false);
 
-        if (sessionInfo.Closed is null)
+        if (sessionInfo.Closed is null || sessionInfo.ErrorsPending != 0)
             return new GameHistorySettledResult(
                 PlayerCode: sessionInfo.Username,
                 ExternalRoundId: sessionInfo.Id,
