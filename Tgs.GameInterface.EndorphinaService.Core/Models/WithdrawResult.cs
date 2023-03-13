@@ -2,4 +2,5 @@
 public record WithdrawResult(
     string RefTransactionCode,
     string TransactionId,
-    decimal Balance);
+    decimal Balance,
+    string Response);

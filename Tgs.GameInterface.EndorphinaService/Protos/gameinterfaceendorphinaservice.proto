@@ -100,7 +100,8 @@ message PlayerBalanceReply {
 message FundReply {
 	string ref_transaction_code = 1;
     string transaction_id = 2;
-    phoenix.protobuf.DecimalValue balance = 3; 
+    phoenix.protobuf.DecimalValue balance = 3;
+	string response = 4;
 }
 
 message FundStatusReply {

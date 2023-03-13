@@ -122,6 +122,7 @@ internal class GameInterfaceEndorphinaGrpcService : GameInterfaceEndorphinaServi
             Balance = result.Balance,
             RefTransactionCode = result.RefTransactionCode,
             TransactionId = result.TransactionId,
+            Response = result.Response,
         };
     }
 
@@ -145,6 +146,7 @@ internal class GameInterfaceEndorphinaGrpcService : GameInterfaceEndorphinaServi
             Balance = result.Balance,
             RefTransactionCode = result.RefTransactionCode,
             TransactionId = result.TransactionId,
+            Response = result.Response,
         };
     }
 

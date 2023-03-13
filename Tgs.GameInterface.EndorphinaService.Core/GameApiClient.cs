@@ -105,7 +105,7 @@ internal class GameApiClient : IGameApiClient
 
         var balance = decimal.Parse(jsonNode!["amount"]!.ToString());
 
-        return new DepositResult(refTransactionCode, transactionId, balance);
+        return new DepositResult(refTransactionCode, transactionId, balance, jsonNode.ToString());
     }
 
     public async ValueTask<WithdrawResult?> WithdrawAsync(Uri apiUrl, string merchantId, string secretKey, string username, string refTransactionCode, decimal amount, string currency, CancellationToken cancellationToken = default)
@@ -157,7 +157,7 @@ internal class GameApiClient : IGameApiClient
 
         var balance = decimal.Parse(jsonNode!["amount"]!.ToString());
 
-        return new WithdrawResult(refTransactionCode, transactionId, balance);
+        return new WithdrawResult(refTransactionCode, transactionId, balance, jsonNode.ToString());
     }
 
     public async ValueTask<bool> SinglePaymentAsync(Uri apiUrl, string merchantId, string secretKey, string transactionId, CancellationToken cancellationToken = default)
