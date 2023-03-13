@@ -62,7 +62,7 @@ internal class GameInterfaceEndorphinaClient : IGameInterfaceEndorphinaClient
             .ConfigureAwait(false);
     }
 
-    public async ValueTask<GameUrlReply> GameUrlAsync(Uri apiUrl, string merchantId, string secretKey, string gameId, string currency, string username, CancellationToken cancellationToken = default)
+    public async ValueTask<GameUrlReply> GameUrlAsync(Uri apiUrl, string merchantId, string secretKey, string gameId, string currency, string username, string language, CancellationToken cancellationToken = default)
     {
         var request = new GameUrlRequest
         {
@@ -72,6 +72,7 @@ internal class GameInterfaceEndorphinaClient : IGameInterfaceEndorphinaClient
             GameId = gameId,
             Currency = currency,
             Username = username,
+            Language = language,
         };
 
         return await _client

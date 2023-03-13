@@ -26,6 +26,6 @@ internal class GameUrlGetService : IGetService<GameUrlQuery, string?>
 
         var sign = EndorphinaHasher.ComputeHash($"{token}{query.SecretKey}");
 
-        return $"{query.ApiUrl}/icasino/sessions/launch?token={token}&sign={sign}";
+        return $"{query.ApiUrl}/icasino/sessions/launch?token={token}&sign={sign}&lang={query.Language}";
     }
 }
