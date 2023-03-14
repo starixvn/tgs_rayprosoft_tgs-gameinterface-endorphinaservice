@@ -17,6 +17,8 @@ internal class GameInterfaceEndorphinaGrpcService : GameInterfaceEndorphinaServi
     private readonly IGetService<GameUrlQuery, string?> _gameUrlService;
     private readonly IGetService<GameTokenQuery, GameTokenResult> _gameTokenService;
     private readonly IGetService<GameHistorySettledQuery, GameHistorySettledResult> _gameHistoryService;
+    private readonly IGetService<GameSessionInfoQuery, GameSessionInfo> _gameSessionInfoService;
+    private readonly IGetService<GameSessionStatisticsQuery, GameSessionStatisticsInfo> _gameSessionStatisticsService;
 
     public GameInterfaceEndorphinaGrpcService(
         ICommandService<PlayerCreateCommand> playerCreateService,
@@ -27,7 +29,9 @@ internal class GameInterfaceEndorphinaGrpcService : GameInterfaceEndorphinaServi
         IGetService<FundStatusQuery, bool> fundStatusService,
         IGetService<GameUrlQuery, string?> gameUrlService,
         IGetService<GameTokenQuery, GameTokenResult> gameTokenService,
-        IGetService<GameHistorySettledQuery, GameHistorySettledResult> gameHistoryService)
+        IGetService<GameHistorySettledQuery, GameHistorySettledResult> gameHistoryService,
+        IGetService<GameSessionInfoQuery, GameSessionInfo> gameSessionInfoService,
+        IGetService<GameSessionStatisticsQuery, GameSessionStatisticsInfo> gameSessionStatisticsService)
     {
         _playerCreateService = playerCreateService ?? throw new ArgumentNullException(nameof(playerCreateService));
         _playerBalanceService = playerBalanceService ?? throw new ArgumentNullException(nameof(playerBalanceService));
@@ -38,6 +42,8 @@ internal class GameInterfaceEndorphinaGrpcService : GameInterfaceEndorphinaServi
         _gameUrlService = gameUrlService ?? throw new ArgumentNullException(nameof(gameUrlService));
         _gameTokenService = gameTokenService ?? throw new ArgumentNullException(nameof(gameTokenService));
         _gameHistoryService = gameHistoryService ?? throw new ArgumentNullException(nameof(gameHistoryService));
+        _gameSessionInfoService = gameSessionInfoService ?? throw new ArgumentNullException(nameof(gameSessionInfoService));
+        _gameSessionStatisticsService = gameSessionStatisticsService ?? throw new ArgumentNullException(nameof(gameSessionStatisticsService));
     }
 
     public override async Task<BaseReply> PlayerCreate(PlayerCreateRequest request, ServerCallContext context)
@@ -239,6 +245,58 @@ internal class GameInterfaceEndorphinaGrpcService : GameInterfaceEndorphinaServi
                 : result.ExternalClosedOn.Value.ToTimestamp(),
             PlayerCode = result.PlayerCode,
             AdditionalData = result.AdditionalData,
+        };
+    }
+
+    public override async Task<GameSessionInfoReply> GameSessionInfo(GameSessionInfoRequest request, ServerCallContext context)
+    {
+        var query = new GameSessionInfoQuery(
+            ApiUrl: new Uri(request.ApiUrl),
+            MerchantId: request.MerchantId,
+            SecretKey: request.SecretKey,
+            Token: request.Token);
+
+        var result = await _gameSessionInfoService
+            .GetAsync(query, cancellationToken: context.CancellationToken)
+            .ConfigureAwait(false);
+
+        return new GameSessionInfoReply()
+        {
+            Id = result.Id,
+            Username = result.Username,
+            GameName = result.GameName,
+            Currency = result.Currency,
+            AccountType = result.AccountType,
+            Created = result.Created.ToTimestamp(),
+            Closed = result.Closed == null
+                ? DateTimeOffset.UnixEpoch.ToTimestamp()
+                : result.Closed.Value.ToTimestamp(),
+            ErrorsPending = result.ErrorsPending,
+        };
+    }
+
+    public override async Task<GameSessionStatisticsReply> GameSessionStatistics(GameSessionStatisticsRequest request, ServerCallContext context)
+    {
+        var query = new GameSessionStatisticsQuery(
+            ApiUrl: new Uri(request.ApiUrl),
+            MerchantId: request.MerchantId,
+            SecretKey: request.SecretKey,
+            Token: request.Token);
+
+        var result = await _gameSessionStatisticsService
+            .GetAsync(query, cancellationToken: context.CancellationToken)
+            .ConfigureAwait(false);
+
+        return new GameSessionStatisticsReply()
+        {
+            Bet = result.Bet,
+            Win = result.Win,
+            Games = result.Games,
+            JackpotWin = result.JackpotWin,
+            Jackpots = result.Jackpots,
+            Deposit = result.Deposit,
+            Withdraw = result.Withdraw,
+            ErrorsPending = result.ErrorsPending,
         };
     }
 }

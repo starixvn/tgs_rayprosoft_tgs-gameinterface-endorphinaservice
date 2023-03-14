@@ -19,6 +19,8 @@ service  GameInterfaceEndorphinaService{
   rpc GameUrl (GameUrlRequest) returns (GameUrlReply);
   rpc GameToken (GameTokenRequest) returns (GameTokenReply);
   rpc GameHistorySettled (GameHistorySettledRequest) returns (GameHistorySettledReply);
+  rpc GameSessionInfo (GameSessionInfoRequest) returns (GameSessionInfoReply);
+  rpc GameSessionStatistics (GameSessionStatisticsRequest) returns (GameSessionStatisticsReply);
 }
 
 // The request message containing the user's name.
@@ -87,6 +89,20 @@ message GameHistorySettledRequest{
 	string token = 4;
 }
 
+message GameSessionInfoRequest{
+	string api_url = 1;
+	string merchant_id = 2;
+	string secret_key = 3;
+	string token = 4;
+}
+
+message GameSessionStatisticsRequest{
+	string api_url = 1;
+	string merchant_id = 2;
+	string secret_key = 3;
+	string token = 4;
+}
+
 // The response message containing the greetings.
 message BaseReply{
 	bool status = 1;
@@ -131,4 +147,26 @@ message GameHistorySettledReply{
 	phoenix.protobuf.DecimalValue settle = 10;
     string additional_data = 11;
 	string external_game_id = 12;
+}
+
+message GameSessionInfoReply{
+	string Id = 1;
+	string username = 2;
+	string game_name = 3;
+	string currency = 4;
+	string account_type = 5;
+	google.protobuf.Timestamp created = 6;
+	google.protobuf.Timestamp closed = 7;
+	int32 errors_pending = 8;
+}
+
+message GameSessionStatisticsReply{
+	phoenix.protobuf.DecimalValue bet = 1;
+	phoenix.protobuf.DecimalValue win = 2;
+	int32 games = 3;
+	phoenix.protobuf.DecimalValue jackpot_win = 4;
+	int32 jackpots = 5;
+	phoenix.protobuf.DecimalValue deposit = 6;
+	phoenix.protobuf.DecimalValue withdraw = 7;
+	int32 errors_pending = 8;
 }
