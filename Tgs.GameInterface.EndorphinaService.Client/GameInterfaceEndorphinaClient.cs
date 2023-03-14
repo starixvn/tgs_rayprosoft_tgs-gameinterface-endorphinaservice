@@ -157,4 +157,34 @@ internal class GameInterfaceEndorphinaClient : IGameInterfaceEndorphinaClient
             .GameHistorySettledAsync(request, cancellationToken: cancellationToken)
             .ConfigureAwait(false);
     }
+
+    public async ValueTask<GameSessionInfoReply> GameSessionInfoAsync(Uri apiUrl, string merchantId, string secretKey, string token, CancellationToken cancellationToken = default)
+    {
+        var request = new GameSessionInfoRequest
+        {
+            ApiUrl = apiUrl.ToString(),
+            MerchantId = merchantId,
+            SecretKey = secretKey,
+            Token = token,
+        };
+
+        return await _client
+            .GameSessionInfoAsync(request, cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    public async ValueTask<GameSessionStatisticsReply> GameSessionStatisticsAsync(Uri apiUrl, string merchantId, string secretKey, string token, CancellationToken cancellationToken = default)
+    {
+        var request = new GameSessionStatisticsRequest
+        {
+            ApiUrl = apiUrl.ToString(),
+            MerchantId = merchantId,
+            SecretKey = secretKey,
+            Token = token,
+        };
+
+        return await _client
+            .GameSessionStatisticsAsync(request, cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
+    }
 }

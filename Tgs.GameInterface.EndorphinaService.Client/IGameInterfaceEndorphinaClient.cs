@@ -78,4 +78,18 @@ public interface IGameInterfaceEndorphinaClient
         string secretKey,
         string token,
         CancellationToken cancellationToken = default);
+
+    ValueTask<GameSessionInfoReply> GameSessionInfoAsync(
+        Uri apiUrl,
+        string merchantId,
+        string secretKey,
+        string token,
+        CancellationToken cancellationToken = default);
+
+    ValueTask<GameSessionStatisticsReply> GameSessionStatisticsAsync(
+        Uri apiUrl,
+        string merchantId,
+        string secretKey,
+        string token,
+        CancellationToken cancellationToken = default);
 }
