@@ -14,7 +14,7 @@
       "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "OTEL_SERVICE_NAME": "Game-GameInterface-ENDOR-Service(local)",
+        "OTEL_SERVICE_NAME": "Game-GameInterface-Endor-Service(local)",
         "NODE_IP": "otel.rpgp.cc"
       },
       "dotnetRunMessages": true,
@@ -29,7 +29,7 @@
       "useSSL": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "OTEL_SERVICE_NAME": "Game-GameInterface-ENDOR-Service(local)",
+        "OTEL_SERVICE_NAME": "Game-GameInterface-Endor-Service(local)",
         "NODE_IP": "otel.rpgp.cc"
       }
     }
