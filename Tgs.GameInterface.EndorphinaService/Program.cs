@@ -109,6 +109,10 @@ builder.Services
     });
 
 builder.Services
+    .AddInterceptionService()
+    .AddServiceUtiltiyInterceptors();
+
+builder.Services
     .AddHealthChecks();
 
 var app = builder.Build();
