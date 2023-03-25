@@ -228,7 +228,7 @@ internal class GameApiClient : IGameApiClient
         var accountsInfo = jsonNode.AsArray();
 
         if (accountsInfo is null || !accountsInfo.Any())
-            return new PlayerBalanceResult(IsPlayerExist: true, Balance: null);
+            return new PlayerBalanceResult(IsPlayerExist: true, Balance: 0);
 
         var results = accountsInfo.Select(x => new PlayerAccountsInfoResult()
         {
