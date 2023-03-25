@@ -120,6 +120,6 @@ public class PlayerAccountsInfoUnitTest
         .ConfigureAwait(false);
 
         Assert.IsTrue(actual.IsPlayerExist);
-        Assert.IsNull(actual.Balance);
+        Assert.AreEqual(0M,actual.Balance);
     }
 }
