@@ -5,18 +5,11 @@ VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.GameInterface.EndorphinaService", "Tgs.GameInterface.EndorphinaService\Tgs.GameInterface.EndorphinaService.csproj", "{10818EA0-3A82-4527-972A-C7019574D4D3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgs.GameInterface.EndorphinaService.Core", "Tgs.GameInterface.EndorphinaService.Core\Tgs.GameInterface.EndorphinaService.Core.csproj", "{96C3CF0F-F56C-4E35-9229-8D6E5BEC8C12}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.GameInterface.EndorphinaService.Core", "Tgs.GameInterface.EndorphinaService.Core\Tgs.GameInterface.EndorphinaService.Core.csproj", "{96C3CF0F-F56C-4E35-9229-8D6E5BEC8C12}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0726F7EC-7A28-46B6-83C6-38C26B73ADE3}"
-	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
-		CodeMaid.config = CodeMaid.config
-		nuget.config = nuget.config
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.GameInterface.EndorphinaService.Core.UnitTest", "Tgs.GameInterface.EndorphinaService.Core.UnitTest\Tgs.GameInterface.EndorphinaService.Core.UnitTest.csproj", "{7012DF71-3AA0-4509-AFEB-20F9663B4399}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgs.GameInterface.EndorphinaService.Core.UnitTest", "Tgs.GameInterface.EndorphinaService.Core.UnitTest\Tgs.GameInterface.EndorphinaService.Core.UnitTest.csproj", "{7012DF71-3AA0-4509-AFEB-20F9663B4399}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tgs.GameInterface.EndorphinaService.Client", "Tgs.GameInterface.EndorphinaService.Client\Tgs.GameInterface.EndorphinaService.Client.csproj", "{525AC4A2-2AA6-486E-BFC5-DB7C77CC3793}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tgs.GameInterface.EndorphinaService.Client", "Tgs.GameInterface.EndorphinaService.Client\Tgs.GameInterface.EndorphinaService.Client.csproj", "{525AC4A2-2AA6-486E-BFC5-DB7C77CC3793}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

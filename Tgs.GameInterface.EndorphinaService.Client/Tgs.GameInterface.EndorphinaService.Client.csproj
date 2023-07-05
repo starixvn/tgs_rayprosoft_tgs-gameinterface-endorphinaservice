@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
 	<PropertyGroup>
-		<Version>0.0.7</Version>
+		<Version>0.0.8</Version>
 		<Authors>Raypro</Authors>
 		<Description>Tgs GameInterface Endorphina Client</Description>
 		<PackageProjectUrl>https://gitlab.com/rayprosoft/tgs-gameinterface-endorphinaservice</PackageProjectUrl>
@@ -15,11 +15,6 @@
 		<RepositoryType>git</RepositoryType>
 		<PackageTags>Tgs GameInterface EndorphinaService</PackageTags>
 	</PropertyGroup>
-
-
-	<ItemGroup>
-    <None Remove="gameinterfaceendorphinaservice.proto" />
-  </ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.49.0" />
@@ -32,8 +27,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Protobuf Include="gameinterfaceendorphinaservice.proto">
-	    <GrpcServices>Client</GrpcServices>
+	  <Protobuf Include="..\Tgs.GameInterface.EndorphinaService\Protos\gameinterfaceendorphinaservice.proto">
+	    <Link>gameinterfaceendorphinaservice.proto</Link>
 	  </Protobuf>
 	</ItemGroup>
 

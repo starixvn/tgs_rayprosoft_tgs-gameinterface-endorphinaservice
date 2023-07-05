@@ -15,12 +15,13 @@ internal class GameTokenGetService : IGetService<GameTokenQuery, GameTokenResult
     {
         var result = await _client
             .RequestSessionTokenAsync(
-                query.ApiUrl,
-                query.MerchantId,
-                query.SecretKey,
-                query.GameId,
-                query.Currency,
-                query.Username)
+                apiUrl: query.ApiUrl,
+                merchantId: query.MerchantId,
+                secretKey: query.SecretKey,
+                gameId: query.GameId,
+                currency: query.Currency,
+                username: query.Username,
+                cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
         return new GameTokenResult(result!.Token!, result!.Username!, result!.Game!);

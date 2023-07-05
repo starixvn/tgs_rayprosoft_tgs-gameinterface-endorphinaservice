@@ -3,7 +3,7 @@
 public record GameHistorySettledResultViewModel(
     string PlayerCode,
     string ExternalRoundId,
-    bool IsClosed,    
+    bool IsClosed,
     DateTimeOffset ExternalCreatedOn,
     DateTimeOffset? ExternalClosedOn,
     decimal Bet,

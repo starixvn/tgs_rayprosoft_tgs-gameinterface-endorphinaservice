@@ -47,7 +47,7 @@ public class SinglePaymentUnitTest
             transactionId: transactionId,
             Arg.Any<CancellationToken>())
         .ConfigureAwait(false);
-        
+
         Assert.IsTrue(actual);
     }
 
@@ -83,7 +83,7 @@ public class SinglePaymentUnitTest
             transactionId: transactionId,
             Arg.Any<CancellationToken>())
         .ConfigureAwait(false);
-        
+
         Assert.IsFalse(actual);
     }
 }

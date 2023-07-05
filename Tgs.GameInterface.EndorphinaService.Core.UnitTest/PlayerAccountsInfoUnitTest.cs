@@ -116,10 +116,10 @@ public class PlayerAccountsInfoUnitTest
             secretKey: secretKey,
             username: username,
             currency: currency,
-            Arg.Any<CancellationToken>())        
+            Arg.Any<CancellationToken>())
         .ConfigureAwait(false);
 
         Assert.IsTrue(actual.IsPlayerExist);
-        Assert.AreEqual(0M,actual.Balance);
+        Assert.AreEqual(0M, actual.Balance);
     }
 }

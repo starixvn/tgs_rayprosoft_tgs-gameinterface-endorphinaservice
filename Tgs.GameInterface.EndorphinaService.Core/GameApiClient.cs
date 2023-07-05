@@ -46,10 +46,8 @@ internal class GameApiClient : IGameApiClient
                $"{StatusCode}({(int)StatusCode})",
                ResponseMessage);
 
-            var errorCodeResponse = JsonSerializer.Deserialize<ErrorCodeResponse>(ResponseMessage);
-
-            if (errorCodeResponse is null)
-                throw new NetworkException(StatusCode, ResponseMessage);
+            var errorCodeResponse = JsonSerializer.Deserialize<ErrorCodeResponse>(ResponseMessage)
+                ?? throw new NetworkException(StatusCode, ResponseMessage);
 
             if (StatusCode is not HttpStatusCode.Conflict && errorCodeResponse.Code is not EndorphinaErrorCode.ALREADY_EXIST_EXCEPTION)
                 throw new GameProviderResponseErrorException(ResponseMessage);
@@ -82,21 +80,17 @@ internal class GameApiClient : IGameApiClient
                $"{StatusCode}({(int)StatusCode})",
                ResponseMessage);
 
-            var errorCodeResponse = JsonSerializer.Deserialize<ErrorCodeResponse>(ResponseMessage);
+            var errorCodeResponse = JsonSerializer.Deserialize<ErrorCodeResponse>(ResponseMessage)
+                ?? throw new NetworkException(StatusCode, ResponseMessage);
 
-            if (errorCodeResponse is null)
-                throw new NetworkException(StatusCode, ResponseMessage);
-
-            if (StatusCode is HttpStatusCode.NotFound && errorCodeResponse.Code is EndorphinaErrorCode.NOT_FOUND_EXCEPTION)
-                return null;
-
-            if (StatusCode is HttpStatusCode.Forbidden
+            return StatusCode is HttpStatusCode.NotFound && errorCodeResponse.Code is EndorphinaErrorCode.NOT_FOUND_EXCEPTION
+                ? null
+                : StatusCode is HttpStatusCode.Forbidden
                 && (errorCodeResponse.Code is EndorphinaErrorCode.ILLEGAL_ARGUMENT_EXCEPTION
                     or EndorphinaErrorCode.INSUFFICIENT_FUNDS_EXCEPTION
-                    or EndorphinaErrorCode.INVALID_CURRENCY_EXCEPTION))
-                return null;
-            else
-                throw new GameProviderResponseErrorException(ResponseMessage);
+                    or EndorphinaErrorCode.INVALID_CURRENCY_EXCEPTION)
+                ? null
+                : throw new GameProviderResponseErrorException(ResponseMessage);
         }
 
         var jsonNode = JsonNode.Parse(ResponseMessage);
@@ -134,21 +128,17 @@ internal class GameApiClient : IGameApiClient
                $"{StatusCode}({(int)StatusCode})",
                ResponseMessage);
 
-            var errorCodeResponse = JsonSerializer.Deserialize<ErrorCodeResponse>(ResponseMessage);
+            var errorCodeResponse = JsonSerializer.Deserialize<ErrorCodeResponse>(ResponseMessage)
+                ?? throw new NetworkException(StatusCode, ResponseMessage);
 
-            if (errorCodeResponse is null)
-                throw new NetworkException(StatusCode, ResponseMessage);
-
-            if (StatusCode is HttpStatusCode.NotFound && errorCodeResponse.Code is EndorphinaErrorCode.NOT_FOUND_EXCEPTION)
-                return null;
-
-            if (StatusCode is HttpStatusCode.Forbidden
+            return StatusCode is HttpStatusCode.NotFound && errorCodeResponse.Code is EndorphinaErrorCode.NOT_FOUND_EXCEPTION
+                ? null
+                : StatusCode is HttpStatusCode.Forbidden
                 && (errorCodeResponse.Code is EndorphinaErrorCode.ILLEGAL_ARGUMENT_EXCEPTION
                     or EndorphinaErrorCode.INSUFFICIENT_FUNDS_EXCEPTION
-                    or EndorphinaErrorCode.INVALID_CURRENCY_EXCEPTION))
-                return null;
-            else
-                throw new GameProviderResponseErrorException(ResponseMessage);
+                    or EndorphinaErrorCode.INVALID_CURRENCY_EXCEPTION)
+                ? null
+                : throw new GameProviderResponseErrorException(ResponseMessage);
         }
 
         var jsonNode = JsonNode.Parse(ResponseMessage);
@@ -182,13 +172,11 @@ internal class GameApiClient : IGameApiClient
 
             var errorCodeResponse = JsonSerializer.Deserialize<ErrorCodeResponse>(ResponseMessage);
 
-            if (errorCodeResponse is null)
-                throw new NetworkException(StatusCode, ResponseMessage);
-
-            if (StatusCode is HttpStatusCode.NotFound && errorCodeResponse.Code is EndorphinaErrorCode.NOT_FOUND_EXCEPTION)
-                return false;
-            else
-                throw new GameProviderResponseErrorException(ResponseMessage);
+            return errorCodeResponse is null
+                ? throw new NetworkException(StatusCode, ResponseMessage)
+                : StatusCode is HttpStatusCode.NotFound && errorCodeResponse.Code is EndorphinaErrorCode.NOT_FOUND_EXCEPTION
+                ? false
+                : throw new GameProviderResponseErrorException(ResponseMessage);
         }
 
         return true;
@@ -214,10 +202,8 @@ internal class GameApiClient : IGameApiClient
                $"{StatusCode}({(int)StatusCode})",
                ResponseMessage);
 
-            var errorCodeResponse = JsonSerializer.Deserialize<ErrorCodeResponse>(ResponseMessage);
-
-            if (errorCodeResponse is null)
-                throw new NetworkException(StatusCode, ResponseMessage);
+            var errorCodeResponse = JsonSerializer.Deserialize<ErrorCodeResponse>(ResponseMessage)
+                ?? throw new NetworkException(StatusCode, ResponseMessage);
 
             if (StatusCode is HttpStatusCode.NotFound && errorCodeResponse.Code is EndorphinaErrorCode.NOT_FOUND_EXCEPTION)
                 return new PlayerBalanceResult(IsPlayerExist: false, Balance: null);
@@ -241,10 +227,9 @@ internal class GameApiClient : IGameApiClient
 
         var accountInfo = results.FirstOrDefault(x => x.Currency == currency);
 
-        if (accountInfo == null)
-            return new PlayerBalanceResult(IsPlayerExist: true, Balance: null);
-
-        return new PlayerBalanceResult(true, accountInfo.Balance);
+        return accountInfo == null
+            ? new PlayerBalanceResult(IsPlayerExist: true, Balance: null)
+            : new PlayerBalanceResult(true, accountInfo.Balance);
     }
 
     public async ValueTask<RequestSessionTokenResult> RequestSessionTokenAsync(Uri apiUrl, string merchantId, string secretKey, string gameId, string currency, string username, CancellationToken cancellationToken = default)
@@ -274,30 +259,26 @@ internal class GameApiClient : IGameApiClient
                $"{StatusCode}({(int)StatusCode})",
                ResponseMessage);
 
-            var errorCodeResponse = JsonSerializer.Deserialize<ErrorCodeResponse>(ResponseMessage);
+            var errorCodeResponse = JsonSerializer.Deserialize<ErrorCodeResponse>(ResponseMessage)
+                ?? throw new NetworkException(StatusCode, ResponseMessage);
 
-            if (errorCodeResponse is null)
-                throw new NetworkException(StatusCode, ResponseMessage);
-
-            if (StatusCode is HttpStatusCode.NotFound && errorCodeResponse.Code is EndorphinaErrorCode.NOT_FOUND_EXCEPTION)
-                return new RequestSessionTokenResult
+            return StatusCode is HttpStatusCode.NotFound && errorCodeResponse.Code is EndorphinaErrorCode.NOT_FOUND_EXCEPTION
+                ? new RequestSessionTokenResult
                 {
                     Username = null,
                     Provider = null,
                     Game = null,
                     Token = null,
-                };
-
-            if (StatusCode is HttpStatusCode.Forbidden && errorCodeResponse.Code is EndorphinaErrorCode.ILLEGAL_ARGUMENT_EXCEPTION)
-                return new RequestSessionTokenResult
+                }
+                : StatusCode is HttpStatusCode.Forbidden && errorCodeResponse.Code is EndorphinaErrorCode.ILLEGAL_ARGUMENT_EXCEPTION
+                ? new RequestSessionTokenResult
                 {
                     Username = null,
                     Provider = null,
                     Game = null,
                     Token = null,
-                };
-
-            throw new GameProviderResponseErrorException(ResponseMessage);
+                }
+                : throw new GameProviderResponseErrorException(ResponseMessage);
         }
 
         var jsonNode = JsonNode.Parse(ResponseMessage);
@@ -335,10 +316,8 @@ internal class GameApiClient : IGameApiClient
                $"{StatusCode}({(int)StatusCode})",
                ResponseMessage);
 
-            var errorCodeResponse = JsonSerializer.Deserialize<ErrorCodeResponse>(ResponseMessage);
-
-            if (errorCodeResponse is null)
-                throw new NetworkException(StatusCode, ResponseMessage);
+            var errorCodeResponse = JsonSerializer.Deserialize<ErrorCodeResponse>(ResponseMessage)
+                ?? throw new NetworkException(StatusCode, ResponseMessage);
 
             if (errorCodeResponse.Code is not EndorphinaErrorCode.NOT_FOUND_EXCEPTION)
                 throw new GameProviderResponseErrorException(ResponseMessage);
@@ -369,10 +348,8 @@ internal class GameApiClient : IGameApiClient
                $"{StatusCode}({(int)StatusCode})",
                ResponseMessage);
 
-            var errorCodeResponse = JsonSerializer.Deserialize<ErrorCodeResponse>(ResponseMessage);
-
-            if (errorCodeResponse is null)
-                throw new NetworkException(StatusCode, ResponseMessage);
+            _ = JsonSerializer.Deserialize<ErrorCodeResponse>(ResponseMessage)
+               ?? throw new NetworkException(StatusCode, ResponseMessage);
 
             throw new GameProviderResponseErrorException(ResponseMessage);
         }
@@ -412,10 +389,8 @@ internal class GameApiClient : IGameApiClient
                $"{StatusCode}({(int)StatusCode})",
                ResponseMessage);
 
-            var errorCodeResponse = JsonSerializer.Deserialize<ErrorCodeResponse>(ResponseMessage);
-
-            if (errorCodeResponse is null)
-                throw new NetworkException(StatusCode, ResponseMessage);
+            _ = JsonSerializer.Deserialize<ErrorCodeResponse>(ResponseMessage)
+                ?? throw new NetworkException(StatusCode, ResponseMessage);
 
             throw new GameProviderResponseErrorException(ResponseMessage);
         }
@@ -475,7 +450,10 @@ internal class GameApiClient : IGameApiClient
 
         using (var sr = new StreamReader(httpResponseMessage.Content.ReadAsStreamAsync(cancellationToken).Result))
         {
-            responseMessage = await sr.ReadToEndAsync().ConfigureAwait(false) ?? string.Empty;
+            responseMessage = await sr
+                .ReadToEndAsync(
+                cancellationToken: cancellationToken)
+                .ConfigureAwait(false) ?? string.Empty;
         }
 
         var apiLogEvent = new GameApiLogEvent
@@ -526,7 +504,10 @@ internal class GameApiClient : IGameApiClient
 
         using (var sr = new StreamReader(httpResponseMessage.Content.ReadAsStreamAsync(cancellationToken).Result))
         {
-            responseMessage = await sr.ReadToEndAsync().ConfigureAwait(false) ?? string.Empty;
+            responseMessage = await sr
+                .ReadToEndAsync(
+                cancellationToken: cancellationToken)
+                .ConfigureAwait(false) ?? string.Empty;
         }
 
         var apiLogEvent = new GameApiLogEvent
@@ -577,7 +558,10 @@ internal class GameApiClient : IGameApiClient
 
         using (var sr = new StreamReader(httpResponseMessage.Content.ReadAsStreamAsync(cancellationToken).Result))
         {
-            responseMessage = await sr.ReadToEndAsync().ConfigureAwait(false) ?? string.Empty;
+            responseMessage = await sr
+                .ReadToEndAsync(
+                cancellationToken: cancellationToken)
+                .ConfigureAwait(false) ?? string.Empty;
         }
 
         var apiLogEvent = new GameApiLogEvent

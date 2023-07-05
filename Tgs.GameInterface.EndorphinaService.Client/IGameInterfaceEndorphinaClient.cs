@@ -4,6 +4,10 @@ namespace Tgs.GameInterface.EndorphinaService.Client;
 
 public interface IGameInterfaceEndorphinaClient
 {
+    ValueTask<string> CheckingServiceAsync(
+        string machineName,
+        CancellationToken cancellationToken = default);
+
     ValueTask PlayerCreateAsync(
         Uri apiUrl,
         string merchantId,

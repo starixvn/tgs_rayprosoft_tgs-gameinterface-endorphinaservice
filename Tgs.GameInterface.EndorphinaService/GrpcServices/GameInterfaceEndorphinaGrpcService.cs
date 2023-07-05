@@ -8,6 +8,7 @@ namespace Tgs.GameInterface.EndorphinaService.GrpcServices;
 
 internal class GameInterfaceEndorphinaGrpcService : GameInterfaceEndorphinaService.GameInterfaceEndorphinaServiceBase
 {
+    private readonly ILogger<GameInterfaceEndorphinaGrpcService> _logger;
     private readonly ICommandService<PlayerCreateCommand> _playerCreateService;
     private readonly IGetService<PlayerBalanceQuery, PlayerBalanceResult> _playerBalanceService;
     private readonly ICommandService<PlayerKickCommand> _playerKickService;
@@ -21,6 +22,7 @@ internal class GameInterfaceEndorphinaGrpcService : GameInterfaceEndorphinaServi
     private readonly IGetService<GameSessionStatisticsQuery, GameSessionStatisticsInfo> _gameSessionStatisticsService;
 
     public GameInterfaceEndorphinaGrpcService(
+        ILogger<GameInterfaceEndorphinaGrpcService> logger,
         ICommandService<PlayerCreateCommand> playerCreateService,
         IGetService<PlayerBalanceQuery, PlayerBalanceResult> playerBalanceService,
         ICommandService<PlayerKickCommand> playerKickService,
@@ -33,6 +35,7 @@ internal class GameInterfaceEndorphinaGrpcService : GameInterfaceEndorphinaServi
         IGetService<GameSessionInfoQuery, GameSessionInfo> gameSessionInfoService,
         IGetService<GameSessionStatisticsQuery, GameSessionStatisticsInfo> gameSessionStatisticsService)
     {
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _playerCreateService = playerCreateService ?? throw new ArgumentNullException(nameof(playerCreateService));
         _playerBalanceService = playerBalanceService ?? throw new ArgumentNullException(nameof(playerBalanceService));
         _playerKickService = playerKickService ?? throw new ArgumentNullException(nameof(playerKickService));
@@ -44,6 +47,16 @@ internal class GameInterfaceEndorphinaGrpcService : GameInterfaceEndorphinaServi
         _gameHistoryService = gameHistoryService ?? throw new ArgumentNullException(nameof(gameHistoryService));
         _gameSessionInfoService = gameSessionInfoService ?? throw new ArgumentNullException(nameof(gameSessionInfoService));
         _gameSessionStatisticsService = gameSessionStatisticsService ?? throw new ArgumentNullException(nameof(gameSessionStatisticsService));
+    }
+
+    public override Task<CheckingServiceReply> CheckingService(CheckingServiceRequest request, ServerCallContext context)
+    {
+        _logger.LogWarning("LogOn:{logOn} Message: Create a check connection.({machineName})", DateTime.Now.ToString("o"), request.MachineName);
+
+        return Task.FromResult(new CheckingServiceReply
+        {
+            MachineName = Environment.MachineName
+        });
     }
 
     public override async Task<BaseReply> PlayerCreate(PlayerCreateRequest request, ServerCallContext context)

@@ -13,12 +13,14 @@ internal class GameSessionInfoGetService : IGetService<GameSessionInfoQuery, Gam
 
     public async ValueTask<GameSessionInfo> GetAsync(GameSessionInfoQuery query, CancellationToken cancellationToken = default)
     {
-        var result = await _client.GameSessionInfoAsync(
-            query.ApiUrl,
-            query.MerchantId,
-            query.SecretKey,
-            query.Token).ConfigureAwait(false);
-    
+        var result = await _client
+            .GameSessionInfoAsync(
+            apiUrl: query.ApiUrl,
+            merchantId: query.MerchantId,
+            secretKey: query.SecretKey,
+            token: query.Token,
+            cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
 
         return new GameSessionInfo
         {
