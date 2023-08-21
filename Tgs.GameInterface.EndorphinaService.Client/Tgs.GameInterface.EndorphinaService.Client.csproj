@@ -7,7 +7,7 @@
   </PropertyGroup>
 
 	<PropertyGroup>
-		<Version>0.0.10</Version>
+		<Version>0.0.11</Version>
 		<Authors>Raypro</Authors>
 		<Description>Tgs GameInterface Endorphina Client</Description>
 		<PackageProjectUrl>https://gitlab.com/rayprosoft/tgs-gameinterface-endorphinaservice</PackageProjectUrl>
