@@ -137,7 +137,8 @@ public class GameSessionInfoUnitTest
 
         var sut = new GameApiClient(fakeHttpClient, fakeLog);
 
-        Assert.ThrowsExceptionAsync<GameProviderResponseErrorException>(async () => await sut.GameSessionInfoAsync(
+        _ = Assert.ThrowsExceptionAsync<GameProviderResponseErrorException>(
+            async () => await sut.GameSessionInfoAsync(
             apiUrl: apiUrl,
             merchantId: merchantId,
             secretKey: secretKey,

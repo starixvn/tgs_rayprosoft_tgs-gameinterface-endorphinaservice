@@ -46,7 +46,7 @@ public class GameSessionStatisticsUnitTest
             secretKey: secretKey,
             token: token,
             Arg.Any<CancellationToken>())
-        .ConfigureAwait(false);
+            .ConfigureAwait(false);
 
         Assert.IsNotNull(actual);
         Assert.AreEqual(2M, actual.Bet);
@@ -77,12 +77,13 @@ public class GameSessionStatisticsUnitTest
 
         var sut = new GameApiClient(fakeHttpClient, fakeLog);
 
-        Assert.ThrowsExceptionAsync<GameProviderResponseErrorException>(async () => await sut.GameSessionStatisticsAsync(
+        _ = Assert.ThrowsExceptionAsync<GameProviderResponseErrorException>(
+            async () => await sut.GameSessionStatisticsAsync(
             apiUrl: apiUrl,
             merchantId: merchantId,
             secretKey: secretKey,
             token: token,
             Arg.Any<CancellationToken>())
-        .ConfigureAwait(false));
+            .ConfigureAwait(false));
     }
 }
