@@ -1,25 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
 
 	<PropertyGroup>
-		<Version>0.0.13</Version>
+		<Version>0.0.14</Version>
 		<Authors>Raypro</Authors>
-		<Description>Tgs GameInterface Endorphina Client</Description>
 		<PackageProjectUrl>https://gitlab.com/rayprosoft/tgs-gameinterface-endorphinaservice</PackageProjectUrl>
 		<RepositoryUrl>https://gitlab.com/rayprosoft/tgs-gameinterface-endorphinaservice.git</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<PackageTags>Tgs GameInterface EndorphinaService</PackageTags>
+		<RootNamespace>Tgs.GameInterface.EndorphinaService.Client</RootNamespace>
+		<PackageId>Tgs.GameInterface.EndorphinaService.Client</PackageId>
+		<Title>Tgs.GameInterface.EndorphinaService.Client</Title>
+		<Description>Tgs.GameInterface.EndorphinaService.Client</Description>
+		<PackageTags>Tgs GameInterface EndorphinaService Client</PackageTags>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.58.0" />
-		<PackageReference Include="Grpc.Net.ClientFactory" Version="2.58.0" />
-		<PackageReference Include="Grpc.Tools" Version="2.59.0">
+		<PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.59.0" />
+		<PackageReference Include="Grpc.Net.ClientFactory" Version="2.59.0" />
+		<PackageReference Include="Grpc.Tools" Version="2.60.0">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
@@ -27,9 +30,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Protobuf Include="..\Tgs.GameInterface.EndorphinaService\Protos\gameinterfaceendorphinaservice.proto">
-	    <Link>gameinterfaceendorphinaservice.proto</Link>
-	  </Protobuf>
+		<Protobuf Include="..\Tgs.GameInterface.EndorphinaService\Protos\gameinterfaceendorphinaservice.proto">
+			<Link>gameinterfaceendorphinaservice.proto</Link>
+		</Protobuf>
 	</ItemGroup>
 
 </Project>

@@ -6,52 +6,23 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.GameInterface.EndorphinaService.GrpcServices;
 
-internal class GameInterfaceEndorphinaGrpcService : GameInterfaceEndorphinaService.GameInterfaceEndorphinaServiceBase
+internal class GameInterfaceEndorphinaGrpcService(
+    ILogger<GameInterfaceEndorphinaGrpcService> logger,
+    ICommandService<PlayerCreateCommand> playerCreateService,
+    IGetService<PlayerBalanceQuery, PlayerBalanceResult> playerBalanceService,
+    ICommandService<PlayerKickCommand> playerKickService,
+    IGetService<FundInQuery, FundResult> fundInService,
+    IGetService<FundOutQuery, FundResult> fundOutService,
+    IGetService<FundStatusQuery, bool> fundStatusService,
+    IGetService<GameUrlQuery, string?> gameUrlService,
+    IGetService<GameTokenQuery, GameTokenResult> gameTokenService,
+    IGetService<GameHistorySettledQuery, GameHistorySettledResult> gameHistoryService,
+    IGetService<GameSessionInfoQuery, GameSessionInfo> gameSessionInfoService,
+    IGetService<GameSessionStatisticsQuery, GameSessionStatisticsInfo> gameSessionStatisticsService) : GameInterfaceEndorphinaService.GameInterfaceEndorphinaServiceBase
 {
-    private readonly ILogger<GameInterfaceEndorphinaGrpcService> _logger;
-    private readonly ICommandService<PlayerCreateCommand> _playerCreateService;
-    private readonly IGetService<PlayerBalanceQuery, PlayerBalanceResult> _playerBalanceService;
-    private readonly ICommandService<PlayerKickCommand> _playerKickService;
-    private readonly IGetService<FundInQuery, FundResult> _fundInService;
-    private readonly IGetService<FundOutQuery, FundResult> _fundOutService;
-    private readonly IGetService<FundStatusQuery, bool> _fundStatusService;
-    private readonly IGetService<GameUrlQuery, string?> _gameUrlService;
-    private readonly IGetService<GameTokenQuery, GameTokenResult> _gameTokenService;
-    private readonly IGetService<GameHistorySettledQuery, GameHistorySettledResult> _gameHistoryService;
-    private readonly IGetService<GameSessionInfoQuery, GameSessionInfo> _gameSessionInfoService;
-    private readonly IGetService<GameSessionStatisticsQuery, GameSessionStatisticsInfo> _gameSessionStatisticsService;
-
-    public GameInterfaceEndorphinaGrpcService(
-        ILogger<GameInterfaceEndorphinaGrpcService> logger,
-        ICommandService<PlayerCreateCommand> playerCreateService,
-        IGetService<PlayerBalanceQuery, PlayerBalanceResult> playerBalanceService,
-        ICommandService<PlayerKickCommand> playerKickService,
-        IGetService<FundInQuery, FundResult> fundInService,
-        IGetService<FundOutQuery, FundResult> fundOutService,
-        IGetService<FundStatusQuery, bool> fundStatusService,
-        IGetService<GameUrlQuery, string?> gameUrlService,
-        IGetService<GameTokenQuery, GameTokenResult> gameTokenService,
-        IGetService<GameHistorySettledQuery, GameHistorySettledResult> gameHistoryService,
-        IGetService<GameSessionInfoQuery, GameSessionInfo> gameSessionInfoService,
-        IGetService<GameSessionStatisticsQuery, GameSessionStatisticsInfo> gameSessionStatisticsService)
-    {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _playerCreateService = playerCreateService ?? throw new ArgumentNullException(nameof(playerCreateService));
-        _playerBalanceService = playerBalanceService ?? throw new ArgumentNullException(nameof(playerBalanceService));
-        _playerKickService = playerKickService ?? throw new ArgumentNullException(nameof(playerKickService));
-        _fundInService = fundInService ?? throw new ArgumentNullException(nameof(fundInService));
-        _fundOutService = fundOutService ?? throw new ArgumentNullException(nameof(fundOutService));
-        _fundStatusService = fundStatusService ?? throw new ArgumentNullException(nameof(fundStatusService));
-        _gameUrlService = gameUrlService ?? throw new ArgumentNullException(nameof(gameUrlService));
-        _gameTokenService = gameTokenService ?? throw new ArgumentNullException(nameof(gameTokenService));
-        _gameHistoryService = gameHistoryService ?? throw new ArgumentNullException(nameof(gameHistoryService));
-        _gameSessionInfoService = gameSessionInfoService ?? throw new ArgumentNullException(nameof(gameSessionInfoService));
-        _gameSessionStatisticsService = gameSessionStatisticsService ?? throw new ArgumentNullException(nameof(gameSessionStatisticsService));
-    }
-
     public override Task<CheckingServiceReply> CheckingService(CheckingServiceRequest request, ServerCallContext context)
     {
-        _logger.LogWarning("LogOn:{logOn} Message: Create a check connection.({machineName})", DateTime.Now.ToString("o"), request.MachineName);
+        logger.LogWarning("LogOn:{logOn} Message: Create a check connection.({machineName})", DateTime.Now.ToString("o"), request.MachineName);
 
         return Task.FromResult(new CheckingServiceReply
         {
@@ -67,7 +38,7 @@ internal class GameInterfaceEndorphinaGrpcService : GameInterfaceEndorphinaServi
            SecretKey: request.SecretKey,
            Username: request.Username);
 
-        await _playerCreateService
+        await playerCreateService
             .ExecuteAsync(
                 command: command,
                 cancellationToken: context.CancellationToken)
@@ -88,7 +59,7 @@ internal class GameInterfaceEndorphinaGrpcService : GameInterfaceEndorphinaServi
            Username: request.Username,
            Currency: request.Currency);
 
-        var result = await _playerBalanceService
+        var result = await playerBalanceService
             .GetAsync(
                 query: query,
                 cancellationToken: context.CancellationToken)
@@ -109,7 +80,7 @@ internal class GameInterfaceEndorphinaGrpcService : GameInterfaceEndorphinaServi
             SecretKey: request.SecretKey,
             Username: request.Username);
 
-        await _playerKickService
+        await playerKickService
             .ExecuteAsync(
                 command,
                 cancellationToken: context.CancellationToken)
@@ -132,7 +103,7 @@ internal class GameInterfaceEndorphinaGrpcService : GameInterfaceEndorphinaServi
             RefTransactionCode: request.RefTransactionCode,
             Amount: request.Amount);
 
-        var result = await _fundInService
+        var result = await fundInService
             .GetAsync(query, cancellationToken: context.CancellationToken)
             .ConfigureAwait(false);
 
@@ -156,7 +127,7 @@ internal class GameInterfaceEndorphinaGrpcService : GameInterfaceEndorphinaServi
             RefTransactionCode: request.RefTransactionCode,
             Amount: request.Amount);
 
-        var result = await _fundOutService
+        var result = await fundOutService
             .GetAsync(query, cancellationToken: context.CancellationToken)
             .ConfigureAwait(false);
 
@@ -177,7 +148,7 @@ internal class GameInterfaceEndorphinaGrpcService : GameInterfaceEndorphinaServi
             SecretKey: request.SecretKey,
             TransactionId: request.TransactionId);
 
-        var result = await _fundStatusService
+        var result = await fundStatusService
             .GetAsync(query, cancellationToken: context.CancellationToken)
             .ConfigureAwait(false);
 
@@ -198,7 +169,7 @@ internal class GameInterfaceEndorphinaGrpcService : GameInterfaceEndorphinaServi
             Username: request.Username,
             Language: request.Language);
 
-        var result = await _gameUrlService
+        var result = await gameUrlService
             .GetAsync(query, cancellationToken: context.CancellationToken)
             .ConfigureAwait(false);
 
@@ -218,7 +189,7 @@ internal class GameInterfaceEndorphinaGrpcService : GameInterfaceEndorphinaServi
             Currency: request.Currency,
             Username: request.Username);
 
-        var result = await _gameTokenService
+        var result = await gameTokenService
             .GetAsync(query, cancellationToken: context.CancellationToken)
             .ConfigureAwait(false);
 
@@ -238,7 +209,7 @@ internal class GameInterfaceEndorphinaGrpcService : GameInterfaceEndorphinaServi
             SecretKey: request.SecretKey,
             Token: request.Token);
 
-        var result = await _gameHistoryService
+        var result = await gameHistoryService
             .GetAsync(query, cancellationToken: context.CancellationToken)
             .ConfigureAwait(false);
 
@@ -269,7 +240,7 @@ internal class GameInterfaceEndorphinaGrpcService : GameInterfaceEndorphinaServi
             SecretKey: request.SecretKey,
             Token: request.Token);
 
-        var result = await _gameSessionInfoService
+        var result = await gameSessionInfoService
             .GetAsync(query, cancellationToken: context.CancellationToken)
             .ConfigureAwait(false);
 
@@ -296,7 +267,7 @@ internal class GameInterfaceEndorphinaGrpcService : GameInterfaceEndorphinaServi
             SecretKey: request.SecretKey,
             Token: request.Token);
 
-        var result = await _gameSessionStatisticsService
+        var result = await gameSessionStatisticsService
             .GetAsync(query, cancellationToken: context.CancellationToken)
             .ConfigureAwait(false);
 

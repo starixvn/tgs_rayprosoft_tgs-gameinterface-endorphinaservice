@@ -2,18 +2,11 @@
 
 namespace Tgs.GameInterface.EndorphinaService.Core.ApplicationServices;
 
-internal class GameHistorySettledGetService : IGetService<GameHistorySettledQuery, GameHistorySettledResult>
+internal class GameHistorySettledGetService(IGameApiClient client) : IGetService<GameHistorySettledQuery, GameHistorySettledResult>
 {
-    private readonly IGameApiClient _client;
-
-    public GameHistorySettledGetService(IGameApiClient client)
-    {
-        _client = client ?? throw new ArgumentNullException(nameof(client));
-    }
-
     public async ValueTask<GameHistorySettledResult> GetAsync(GameHistorySettledQuery query, CancellationToken cancellationToken = default)
     {
-        var sessionInfo = await _client.GameSessionInfoAsync(
+        var sessionInfo = await client.GameSessionInfoAsync(
             apiUrl: query.ApiUrl,
             merchantId: query.MerchantId,
             secretKey: query.SecretKey,
@@ -35,7 +28,7 @@ internal class GameHistorySettledGetService : IGetService<GameHistorySettledQuer
                 AdditionalData: string.Empty,
                 ExternalGameId: sessionInfo.GameName);
 
-        var settleResult = await _client.GameSessionStatisticsAsync(
+        var settleResult = await client.GameSessionStatisticsAsync(
                 apiUrl: query.ApiUrl,
                 merchantId: query.MerchantId,
                 secretKey: query.SecretKey,

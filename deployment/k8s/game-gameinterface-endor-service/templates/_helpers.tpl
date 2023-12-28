@@ -47,7 +47,6 @@ Selector labels
 */}}
 {{- define "game-gameinterface-endor-service.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "game-gameinterface-endor-service.name" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
 app: {{ include "game-gameinterface-endor-service.name" . }}
 tgs.kind: game
 tgs.game.kind: gameinterface

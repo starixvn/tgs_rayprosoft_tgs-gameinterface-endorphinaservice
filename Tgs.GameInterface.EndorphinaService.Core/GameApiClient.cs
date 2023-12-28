@@ -13,19 +13,10 @@ using Tgs.GameInterface.SkywindService.Core.Models;
 
 namespace Tgs.GameInterface.EndorphinaService.Core;
 
-internal class GameApiClient : IGameApiClient
+internal class GameApiClient(
+    HttpClient client,
+    ILogger<GameApiClient> logger) : IGameApiClient
 {
-    private readonly HttpClient _client;
-    private readonly ILogger<GameApiClient> _logger;
-
-    public GameApiClient(
-        HttpClient client,
-        ILogger<GameApiClient> logger)
-    {
-        _client = client ?? throw new ArgumentNullException(nameof(client));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
-
     public async ValueTask PlayerRegistrationAsync(Uri apiUrl, string merchantId, string secretKey, string username, CancellationToken cancellationToken = default)
     {
         var url = new Uri(apiUrl, $"/api/casino/player/{username}");
@@ -40,7 +31,7 @@ internal class GameApiClient : IGameApiClient
 
         if (!IsSuccess)
         {
-            _logger.LogError("LogOn:{logOn} ApiUrl:{url} StatusCode:{statusCode} Response:{responseMessage}",
+            logger.LogError("LogOn:{logOn} ApiUrl:{url} StatusCode:{statusCode} Response:{responseMessage}",
                DateTime.Now.ToString("o"),
                url.ToString(),
                $"{StatusCode}({(int)StatusCode})",
@@ -74,7 +65,7 @@ internal class GameApiClient : IGameApiClient
 
         if (!IsSuccess)
         {
-            _logger.LogError("LogOn:{logOn} ApiUrl:{url} StatusCode:{statusCode} Response:{responseMessage}",
+            logger.LogError("LogOn:{logOn} ApiUrl:{url} StatusCode:{statusCode} Response:{responseMessage}",
                DateTime.Now.ToString("o"),
                url.ToString(),
                $"{StatusCode}({(int)StatusCode})",
@@ -122,7 +113,7 @@ internal class GameApiClient : IGameApiClient
 
         if (!IsSuccess)
         {
-            _logger.LogError("LogOn:{logOn} ApiUrl:{url} StatusCode:{statusCode} Response:{responseMessage}",
+            logger.LogError("LogOn:{logOn} ApiUrl:{url} StatusCode:{statusCode} Response:{responseMessage}",
                DateTime.Now.ToString("o"),
                url.ToString(),
                $"{StatusCode}({(int)StatusCode})",
@@ -164,7 +155,7 @@ internal class GameApiClient : IGameApiClient
 
         if (!IsSuccess)
         {
-            _logger.LogError("LogOn:{logOn} ApiUrl:{url} StatusCode:{statusCode} Response:{responseMessage}",
+            logger.LogError("LogOn:{logOn} ApiUrl:{url} StatusCode:{statusCode} Response:{responseMessage}",
                DateTime.Now.ToString("o"),
                url.ToString(),
                $"{StatusCode}({(int)StatusCode})",
@@ -196,7 +187,7 @@ internal class GameApiClient : IGameApiClient
 
         if (!IsSuccess)
         {
-            _logger.LogError("LogOn:{logOn} ApiUrl:{url} StatusCode:{statusCode} Response:{responseMessage}",
+            logger.LogError("LogOn:{logOn} ApiUrl:{url} StatusCode:{statusCode} Response:{responseMessage}",
                DateTime.Now.ToString("o"),
                url.ToString(),
                $"{StatusCode}({(int)StatusCode})",
@@ -213,7 +204,7 @@ internal class GameApiClient : IGameApiClient
 
         var accountsInfo = jsonNode.AsArray();
 
-        if (accountsInfo is null || !accountsInfo.Any())
+        if (accountsInfo is null || accountsInfo.Count == 0)
             return new PlayerBalanceResult(IsPlayerExist: true, Balance: 0);
 
         var results = accountsInfo.Select(x => new PlayerAccountsInfoResult()
@@ -253,7 +244,7 @@ internal class GameApiClient : IGameApiClient
 
         if (!IsSuccess)
         {
-            _logger.LogError("LogOn:{logOn} ApiUrl:{url} StatusCode:{statusCode} Response:{responseMessage}",
+            logger.LogError("LogOn:{logOn} ApiUrl:{url} StatusCode:{statusCode} Response:{responseMessage}",
                DateTime.Now.ToString("o"),
                url.ToString(),
                $"{StatusCode}({(int)StatusCode})",
@@ -310,7 +301,7 @@ internal class GameApiClient : IGameApiClient
 
         if (!IsSuccess)
         {
-            _logger.LogError("LogOn:{logOn} ApiUrl:{url} StatusCode:{statusCode} Response:{responseMessage}",
+            logger.LogError("LogOn:{logOn} ApiUrl:{url} StatusCode:{statusCode} Response:{responseMessage}",
                DateTime.Now.ToString("o"),
                url.ToString(),
                $"{StatusCode}({(int)StatusCode})",
@@ -342,7 +333,7 @@ internal class GameApiClient : IGameApiClient
 
         if (!IsSuccess)
         {
-            _logger.LogError("LogOn:{logOn} ApiUrl:{url} StatusCode:{statusCode} Response:{responseMessage}",
+            logger.LogError("LogOn:{logOn} ApiUrl:{url} StatusCode:{statusCode} Response:{responseMessage}",
                DateTime.Now.ToString("o"),
                url.ToString(),
                $"{StatusCode}({(int)StatusCode})",
@@ -383,7 +374,7 @@ internal class GameApiClient : IGameApiClient
 
         if (!IsSuccess)
         {
-            _logger.LogError("LogOn:{logOn} ApiUrl:{url} StatusCode:{statusCode} Response:{responseMessage}",
+            logger.LogError("LogOn:{logOn} ApiUrl:{url} StatusCode:{statusCode} Response:{responseMessage}",
                DateTime.Now.ToString("o"),
                url.ToString(),
                $"{StatusCode}({(int)StatusCode})",
@@ -426,7 +417,7 @@ internal class GameApiClient : IGameApiClient
 
         var signature = EndorphinaHasher.ComputeHash($"{merchantId}{transactionId}{requestTime}{secretKey}");
 
-        _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
 
         var content = new StringContent(JsonSerializer.Serialize(parameters), Encoding.UTF8, MediaTypeNames.Application.Json);
 
@@ -442,7 +433,7 @@ internal class GameApiClient : IGameApiClient
         requestMessage.Headers.Add("X-Casino-Timestamp", requestTime);
         requestMessage.Headers.Add("X-Casino-Signature", signature);
 
-        httpResponseMessage = await _client.SendAsync(requestMessage, cancellationToken);
+        httpResponseMessage = await client.SendAsync(requestMessage, cancellationToken);
 
         sw.Stop();
 
@@ -471,7 +462,7 @@ internal class GameApiClient : IGameApiClient
             RecordedOn = DateTimeOffset.UtcNow
         };
 
-        _logger.LogInformation("{apiLogEvent}", JsonSerializer.Serialize(apiLogEvent));
+        logger.LogInformation("{apiLogEvent}", JsonSerializer.Serialize(apiLogEvent));
 
         return (httpResponseMessage.IsSuccessStatusCode, httpResponseMessage.StatusCode, responseMessage);
     }
@@ -487,7 +478,7 @@ internal class GameApiClient : IGameApiClient
 
         var signature = EndorphinaHasher.ComputeHash($"{merchantId}{transactionId}{requestTime}{secretKey}");
 
-        _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
 
         var content = new StringContent(JsonSerializer.Serialize(parameters), Encoding.UTF8, MediaTypeNames.Application.Json);
 
@@ -496,7 +487,7 @@ internal class GameApiClient : IGameApiClient
         content.Headers.Add("X-Casino-Timestamp", requestTime);
         content.Headers.Add("X-Casino-Signature", signature);
 
-        var httpResponseMessage = await _client.PostAsync(apiUrl, content, cancellationToken);
+        var httpResponseMessage = await client.PostAsync(apiUrl, content, cancellationToken);
 
         sw.Stop();
 
@@ -525,7 +516,7 @@ internal class GameApiClient : IGameApiClient
             RecordedOn = DateTimeOffset.UtcNow
         };
 
-        _logger.LogInformation("{apiLogEvent}", JsonSerializer.Serialize(apiLogEvent));
+        logger.LogInformation("{apiLogEvent}", JsonSerializer.Serialize(apiLogEvent));
 
         return (httpResponseMessage.IsSuccessStatusCode, httpResponseMessage.StatusCode, responseMessage);
     }
@@ -541,7 +532,7 @@ internal class GameApiClient : IGameApiClient
 
         var signature = EndorphinaHasher.ComputeHash($"{merchantId}{transactionId}{requestTime}{secretKey}");
 
-        _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
 
         var content = new FormUrlEncodedContent(parameters);
 
@@ -550,7 +541,7 @@ internal class GameApiClient : IGameApiClient
         content.Headers.Add("X-Casino-Timestamp", requestTime);
         content.Headers.Add("X-Casino-Signature", signature);
 
-        var httpResponseMessage = await _client.PostAsync(apiUrl, content, cancellationToken);
+        var httpResponseMessage = await client.PostAsync(apiUrl, content, cancellationToken);
 
         sw.Stop();
 
@@ -579,7 +570,7 @@ internal class GameApiClient : IGameApiClient
             RecordedOn = DateTimeOffset.UtcNow
         };
 
-        _logger.LogInformation("{apiLogEvent}", JsonSerializer.Serialize(apiLogEvent));
+        logger.LogInformation("{apiLogEvent}", JsonSerializer.Serialize(apiLogEvent));
 
         return (httpResponseMessage.IsSuccessStatusCode, httpResponseMessage.StatusCode, responseMessage);
     }

@@ -2,18 +2,11 @@
 
 namespace Tgs.GameInterface.EndorphinaService.Core.ApplicationServices;
 
-internal class GameTokenGetService : IGetService<GameTokenQuery, GameTokenResult>
+internal class GameTokenGetService(IGameApiClient client) : IGetService<GameTokenQuery, GameTokenResult>
 {
-    private readonly IGameApiClient _client;
-
-    public GameTokenGetService(IGameApiClient client)
-    {
-        _client = client ?? throw new ArgumentNullException(nameof(client));
-    }
-
     public async ValueTask<GameTokenResult> GetAsync(GameTokenQuery query, CancellationToken cancellationToken = default)
     {
-        var result = await _client
+        var result = await client
             .RequestSessionTokenAsync(
                 apiUrl: query.ApiUrl,
                 merchantId: query.MerchantId,

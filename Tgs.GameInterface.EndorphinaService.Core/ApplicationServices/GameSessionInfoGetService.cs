@@ -2,18 +2,11 @@
 
 namespace Tgs.GameInterface.EndorphinaService.Core.ApplicationServices;
 
-internal class GameSessionInfoGetService : IGetService<GameSessionInfoQuery, GameSessionInfo>
+internal class GameSessionInfoGetService(IGameApiClient client) : IGetService<GameSessionInfoQuery, GameSessionInfo>
 {
-    private readonly IGameApiClient _client;
-
-    public GameSessionInfoGetService(IGameApiClient client)
-    {
-        _client = client ?? throw new ArgumentNullException(nameof(client));
-    }
-
     public async ValueTask<GameSessionInfo> GetAsync(GameSessionInfoQuery query, CancellationToken cancellationToken = default)
     {
-        var result = await _client
+        var result = await client
             .GameSessionInfoAsync(
             apiUrl: query.ApiUrl,
             merchantId: query.MerchantId,

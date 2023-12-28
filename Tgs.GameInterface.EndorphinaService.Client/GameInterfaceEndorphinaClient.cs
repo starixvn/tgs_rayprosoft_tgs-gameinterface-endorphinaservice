@@ -2,15 +2,8 @@
 
 namespace Tgs.GameInterface.EndorphinaService.Client;
 
-internal class GameInterfaceEndorphinaClient : IGameInterfaceEndorphinaClient
+internal class GameInterfaceEndorphinaClient(GameInterfaceEndorphinaService.GameInterfaceEndorphinaServiceClient client) : IGameInterfaceEndorphinaClient
 {
-    private readonly GameInterfaceEndorphinaService.GameInterfaceEndorphinaServiceClient _client;
-
-    public GameInterfaceEndorphinaClient(GameInterfaceEndorphinaService.GameInterfaceEndorphinaServiceClient client)
-    {
-        _client = client ?? throw new ArgumentNullException(nameof(client));
-    }
-
     public async ValueTask<string> CheckingServiceAsync(
         string machineName,
         CancellationToken cancellationToken = default)
@@ -20,7 +13,7 @@ internal class GameInterfaceEndorphinaClient : IGameInterfaceEndorphinaClient
             MachineName = machineName,
         };
 
-        var reply = await _client
+        var reply = await client
             .CheckingServiceAsync(
                 request: request,
                 cancellationToken: cancellationToken)
@@ -50,7 +43,7 @@ internal class GameInterfaceEndorphinaClient : IGameInterfaceEndorphinaClient
             Amount = amount,
         };
 
-        return await _client
+        return await client
             .FundInAsync(request, cancellationToken: cancellationToken)
             .ConfigureAwait(false);
     }
@@ -75,7 +68,7 @@ internal class GameInterfaceEndorphinaClient : IGameInterfaceEndorphinaClient
             Amount = amount,
         };
 
-        return await _client
+        return await client
             .FundOutAsync(request, cancellationToken: cancellationToken)
             .ConfigureAwait(false);
     }
@@ -95,7 +88,7 @@ internal class GameInterfaceEndorphinaClient : IGameInterfaceEndorphinaClient
             TransactionId = transactionId,
         };
 
-        return await _client
+        return await client
             .FundStatusAsync(request, cancellationToken: cancellationToken)
             .ConfigureAwait(false);
     }
@@ -121,7 +114,7 @@ internal class GameInterfaceEndorphinaClient : IGameInterfaceEndorphinaClient
             Language = language,
         };
 
-        return await _client
+        return await client
             .GameUrlAsync(request, cancellationToken: cancellationToken)
             .ConfigureAwait(false);
     }
@@ -143,7 +136,7 @@ internal class GameInterfaceEndorphinaClient : IGameInterfaceEndorphinaClient
             Currency = currency,
         };
 
-        return await _client
+        return await client
             .PlayerBalanceAsync(request, cancellationToken: cancellationToken)
             .ConfigureAwait(false);
     }
@@ -163,7 +156,7 @@ internal class GameInterfaceEndorphinaClient : IGameInterfaceEndorphinaClient
             Username = username,
         };
 
-        _ = await _client
+        _ = await client
             .PlayerCreateAsync(request, cancellationToken: cancellationToken)
             .ConfigureAwait(false);
     }
@@ -183,7 +176,7 @@ internal class GameInterfaceEndorphinaClient : IGameInterfaceEndorphinaClient
             Username = username,
         };
 
-        _ = await _client
+        _ = await client
             .PlayerKickAsync(request, cancellationToken: cancellationToken)
             .ConfigureAwait(false);
     }
@@ -207,7 +200,7 @@ internal class GameInterfaceEndorphinaClient : IGameInterfaceEndorphinaClient
             Username = username,
         };
 
-        return await _client
+        return await client
             .GameTokenAsync(request, cancellationToken: cancellationToken)
             .ConfigureAwait(false);
     }
@@ -227,7 +220,7 @@ internal class GameInterfaceEndorphinaClient : IGameInterfaceEndorphinaClient
             Token = token,
         };
 
-        return await _client
+        return await client
             .GameHistorySettledAsync(request, cancellationToken: cancellationToken)
             .ConfigureAwait(false);
     }
@@ -247,7 +240,7 @@ internal class GameInterfaceEndorphinaClient : IGameInterfaceEndorphinaClient
             Token = token,
         };
 
-        return await _client
+        return await client
             .GameSessionInfoAsync(request, cancellationToken: cancellationToken)
             .ConfigureAwait(false);
     }
@@ -267,7 +260,7 @@ internal class GameInterfaceEndorphinaClient : IGameInterfaceEndorphinaClient
             Token = token,
         };
 
-        return await _client
+        return await client
             .GameSessionStatisticsAsync(request, cancellationToken: cancellationToken)
             .ConfigureAwait(false);
     }
