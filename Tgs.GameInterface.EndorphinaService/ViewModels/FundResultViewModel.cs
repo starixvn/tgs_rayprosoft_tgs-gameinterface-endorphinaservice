@@ -1,7 +1,7 @@
 ﻿namespace Tgs.GameInterface.EndorphinaService.ViewModels;
 
 public record FundResultViewModel(
-    string RefTransactionCode,
-    string TransactionId,
-    decimal Balance,
-    string Response);
+	string RefTransactionCode,
+	string TransactionId,
+	decimal Balance,
+	string Response);

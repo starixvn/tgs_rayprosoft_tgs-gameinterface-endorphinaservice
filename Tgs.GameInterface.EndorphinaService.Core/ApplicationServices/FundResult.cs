@@ -1,7 +1,7 @@
 ﻿namespace Tgs.GameInterface.EndorphinaService.Core.ApplicationServices;
 
 public record FundResult(
-    string RefTransactionCode,
-    string TransactionId,
-    decimal Balance,
-    string Response);
+	string RefTransactionCode,
+	string TransactionId,
+	decimal Balance,
+	string Response);

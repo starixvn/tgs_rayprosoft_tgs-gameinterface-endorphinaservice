@@ -4,96 +4,96 @@ namespace Tgs.GameInterface.EndorphinaService.Client;
 
 public interface IGameInterfaceEndorphinaClient
 {
-    ValueTask<string> CheckingServiceAsync(
-        string machineName,
-        CancellationToken cancellationToken = default);
+	ValueTask<string> CheckingServiceAsync(
+		string machineName,
+		CancellationToken cancellationToken = default);
 
-    ValueTask PlayerCreateAsync(
-        Uri apiUrl,
-        string merchantId,
-        string secretKey,
-        string username,
-        CancellationToken cancellationToken = default);
+	ValueTask PlayerCreateAsync(
+		Uri apiUrl,
+		string merchantId,
+		string secretKey,
+		string username,
+		CancellationToken cancellationToken = default);
 
-    ValueTask<PlayerBalanceReply> PlayerBalanceAsync(
-        Uri apiUrl,
-        string merchantId,
-        string secretKey,
-        string username,
-        string currency,
-        CancellationToken cancellationToken = default);
+	ValueTask<PlayerBalanceReply> PlayerBalanceAsync(
+		Uri apiUrl,
+		string merchantId,
+		string secretKey,
+		string username,
+		string currency,
+		CancellationToken cancellationToken = default);
 
-    ValueTask PlayerKickAsync(
-        Uri apiUrl,
-        string merchantId,
-        string secretKey,
-        string username,
-        CancellationToken cancellationToken = default);
+	ValueTask PlayerKickAsync(
+		Uri apiUrl,
+		string merchantId,
+		string secretKey,
+		string username,
+		CancellationToken cancellationToken = default);
 
-    ValueTask<FundReply> FundInAsync(
-        Uri apiUrl,
-        string merchantId,
-        string secretKey,
-        string username,
-        string currency,
-        string refTransactionCode,
-        decimal amount,
-        CancellationToken cancellationToken = default);
+	ValueTask<FundReply> FundInAsync(
+		Uri apiUrl,
+		string merchantId,
+		string secretKey,
+		string username,
+		string currency,
+		string refTransactionCode,
+		decimal amount,
+		CancellationToken cancellationToken = default);
 
-    ValueTask<FundReply> FundOutAsync(
-        Uri apiUrl,
-        string merchantId,
-        string secretKey,
-        string username,
-        string currency,
-        string refTransactionCode,
-        decimal amount,
-        CancellationToken cancellationToken = default);
+	ValueTask<FundReply> FundOutAsync(
+		Uri apiUrl,
+		string merchantId,
+		string secretKey,
+		string username,
+		string currency,
+		string refTransactionCode,
+		decimal amount,
+		CancellationToken cancellationToken = default);
 
-    ValueTask<FundStatusReply> FundStatusAsync(
-        Uri apiUrl,
-        string merchantId,
-        string secretKey,
-        string transactionId,
-        CancellationToken cancellationToken = default);
+	ValueTask<FundStatusReply> FundStatusAsync(
+		Uri apiUrl,
+		string merchantId,
+		string secretKey,
+		string transactionId,
+		CancellationToken cancellationToken = default);
 
-    ValueTask<GameUrlReply> GameUrlAsync(
-        Uri apiUrl,
-        string merchantId,
-        string secretKey,
-        string gameId,
-        string currency,
-        string username,
-        string language,
-        CancellationToken cancellationToken = default);
+	ValueTask<GameUrlReply> GameUrlAsync(
+		Uri apiUrl,
+		string merchantId,
+		string secretKey,
+		string gameId,
+		string currency,
+		string username,
+		string language,
+		CancellationToken cancellationToken = default);
 
-    ValueTask<GameTokenReply> GameTokenAsync(
-        Uri apiUrl,
-        string merchantId,
-        string secretKey,
-        string gameId,
-        string currency,
-        string username,
-        CancellationToken cancellationToken = default);
+	ValueTask<GameTokenReply> GameTokenAsync(
+		Uri apiUrl,
+		string merchantId,
+		string secretKey,
+		string gameId,
+		string currency,
+		string username,
+		CancellationToken cancellationToken = default);
 
-    ValueTask<GameHistorySettledReply> GameHistorySettledAsync(
-        Uri apiUrl,
-        string merchantId,
-        string secretKey,
-        string token,
-        CancellationToken cancellationToken = default);
+	ValueTask<GameHistorySettledReply> GameHistorySettledAsync(
+		Uri apiUrl,
+		string merchantId,
+		string secretKey,
+		string token,
+		CancellationToken cancellationToken = default);
 
-    ValueTask<GameSessionInfoReply> GameSessionInfoAsync(
-        Uri apiUrl,
-        string merchantId,
-        string secretKey,
-        string token,
-        CancellationToken cancellationToken = default);
+	ValueTask<GameSessionInfoReply> GameSessionInfoAsync(
+		Uri apiUrl,
+		string merchantId,
+		string secretKey,
+		string token,
+		CancellationToken cancellationToken = default);
 
-    ValueTask<GameSessionStatisticsReply> GameSessionStatisticsAsync(
-        Uri apiUrl,
-        string merchantId,
-        string secretKey,
-        string token,
-        CancellationToken cancellationToken = default);
+	ValueTask<GameSessionStatisticsReply> GameSessionStatisticsAsync(
+		Uri apiUrl,
+		string merchantId,
+		string secretKey,
+		string token,
+		CancellationToken cancellationToken = default);
 }
