@@ -3,4 +3,4 @@ public record DepositResult(
 	string RefTransactionCode,
 	string TransactionId,
 	decimal Balance,
-	string Response);
+	string Resp);

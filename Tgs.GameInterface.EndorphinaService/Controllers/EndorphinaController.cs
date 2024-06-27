@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using OpenTelemetry.Resources;
 using Tgs.GameInterface.EndorphinaService.Core.ApplicationServices;
-using Tgs.GameInterface.EndorphinaService.ViewModels;
 using Tgs.ServiceUtility;
 
 namespace Tgs.GameInterface.EndorphinaService.Controllers;
@@ -30,18 +30,10 @@ public class EndorphinaController : ControllerBase
 	[HttpPost("player/create", Name = "PlayerCreate")]
 	public ValueTask PlayerCreateAsync(
 		[FromServices] ICommandService<PlayerCreateCommand> service,
-		PlayerCreateViewModel source)
-	{
-		var command = new PlayerCreateCommand(
-			ApiUrl: source.ApiUrl,
-			MerchantId: source.MerchantId,
-			SecretKey: source.SecretKey,
-			Username: source.Username);
-
-		return service.ExecuteAsync(
-				command: command,
-				cancellationToken: HttpContext.RequestAborted);
-	}
+		PlayerCreateCommand source)
+		=> service.ExecuteAsync(
+			command: source,
+			cancellationToken: HttpContext.RequestAborted);
 
 	/// <summary>
 	/// Funds the out asynchronous.(Tgs -> Gp)
@@ -65,31 +57,12 @@ public class EndorphinaController : ControllerBase
 	///         }
 	/// </remarks>
 	[HttpPost("fund/out", Name = "FundOut")]
-	public async ValueTask<FundResultViewModel> FundOutAsync(
+	public ValueTask<FundResult> FundOutAsync(
 		[FromServices] IGetService<FundOutQuery, FundResult> service,
-		FundViewModel source)
-	{
-		var query = new FundOutQuery(
-			ApiUrl: source.ApiUrl,
-			MerchantId: source.MerchantId,
-			SecretKey: source.SecretKey,
-			Username: source.Username,
-			Currency: source.Currency,
-			RefTransactionCode: source.RefTransactionCode,
-			Amount: source.Amount);
-
-		var result = await service
-				.GetAsync(
-					query: query,
-					cancellationToken: HttpContext.RequestAborted)
-				.ConfigureAwait(false);
-
-		return new FundResultViewModel(
-			RefTransactionCode: result.RefTransactionCode,
-			TransactionId: result.TransactionId,
-			Balance: result.Balance,
-			Response: result.Response);
-	}
+		FundOutQuery source)
+		=> service.GetAsync(
+			query: source,
+			cancellationToken: HttpContext.RequestAborted);
 
 	/// <summary>
 	/// Funds the in asynchronous.(GP -> Tgs)
@@ -113,31 +86,12 @@ public class EndorphinaController : ControllerBase
 	///         }
 	/// </remarks>
 	[HttpPost("fund/in", Name = "FundIn")]
-	public async ValueTask<FundResultViewModel> FundInAsync(
+	public ValueTask<FundResult> FundInAsync(
 		[FromServices] IGetService<FundInQuery, FundResult> service,
-		FundViewModel source)
-	{
-		var query = new FundInQuery(
-			ApiUrl: source.ApiUrl,
-			MerchantId: source.MerchantId,
-			SecretKey: source.SecretKey,
-			Username: source.Username,
-			Currency: source.Currency,
-			RefTransactionCode: source.RefTransactionCode,
-			Amount: source.Amount);
-
-		var result = await service
-				.GetAsync(
-					query: query,
-					cancellationToken: HttpContext.RequestAborted)
-				.ConfigureAwait(false);
-
-		return new FundResultViewModel(
-			RefTransactionCode: result.RefTransactionCode,
-			TransactionId: result.TransactionId,
-			Balance: result.Balance,
-			Response: result.Response);
-	}
+		FundInQuery source)
+		=> service.GetAsync(
+			query: source,
+			cancellationToken: HttpContext.RequestAborted);
 
 	/// <summary>
 	/// Funds the status asynchronous.
@@ -160,18 +114,10 @@ public class EndorphinaController : ControllerBase
 	[HttpPost("fund/Status", Name = "FundStatus")]
 	public ValueTask<bool> FundStatusAsync(
 		[FromServices] IGetService<FundStatusQuery, bool> service,
-		FundStatusViewModel source)
-	{
-		var query = new FundStatusQuery(
-			ApiUrl: source.ApiUrl,
-			MerchantId: source.MerchantId,
-			SecretKey: source.SecretKey,
-			TransactionId: source.TransactionId);
-
-		return service.GetAsync(
-				query: query,
-				cancellationToken: HttpContext.RequestAborted);
-	}
+		FundStatusQuery source)
+		=> service.GetAsync(
+			query: source,
+			cancellationToken: HttpContext.RequestAborted);
 
 	/// <summary>
 	/// Players the balance asynchronous.
@@ -193,33 +139,18 @@ public class EndorphinaController : ControllerBase
 	///         }
 	/// </remarks>
 	[HttpPost("player/balance", Name = "PlayerBalance")]
-	public async ValueTask<PlayerBalanceResultViewModel> PlayerBalanceAsync(
+	public ValueTask<PlayerBalanceResult> PlayerBalanceAsync(
 		[FromServices] IGetService<PlayerBalanceQuery, PlayerBalanceResult> service,
-		PlayerBalanceViewModel source)
-	{
-		var query = new PlayerBalanceQuery(
-			ApiUrl: source.ApiUrl,
-			MerchantId: source.MerchantId,
-			SecretKey: source.SecretKey,
-			Username: source.Username,
-			Currency: source.Currency);
-
-		var result = await service
-			.GetAsync(
-				query: query,
-				cancellationToken: HttpContext.RequestAborted)
-			.ConfigureAwait(false);
-
-		return new PlayerBalanceResultViewModel(
-			result.IsPlayerExist,
-			result.Balance);
-	}
+		PlayerBalanceQuery source)
+		=> service.GetAsync(
+			query: source,
+			cancellationToken: HttpContext.RequestAborted);
 
 	/// <summary>
 	/// Games the URL asynchronous.
 	/// </summary>
 	/// <param name="service">The service.</param>
-	/// <param name="model">The model.</param>
+	/// <param name="source">The source.</param>
 	/// <returns></returns>
 	/// <remarks>
 	/// <b>Example</b><br />
@@ -237,26 +168,15 @@ public class EndorphinaController : ControllerBase
 	///         }
 	/// </remarks>
 	[HttpPost("gameurl")]
-	public async ValueTask<GameUrlResultViewModel> GameUrlAsync(
+	public ValueTask<string?> GameUrlAsync(
 		[FromServices] IGetService<GameUrlQuery, string?> service,
-		GameUrlQueryViewModel model)
-	{
-		var result = await service
-			.GetAsync(new GameUrlQuery(
-				model.ApiUrl,
-				model.MerchantId,
-				model.SecretKey,
-				model.GameId,
-				model.Currency,
-				model.Username,
-				model.Language))
-			.ConfigureAwait(false);
-
-		return new GameUrlResultViewModel(result);
-	}
+		GameUrlQuery source)
+		=> service.GetAsync(
+			query: source,
+			cancellationToken: HttpContext.RequestAborted);
 
 	/// <summary>
-	/// Players the kick asynchronous.
+	/// Players the logout asynchronous.
 	/// </summary>
 	/// <param name="service">The service.</param>
 	/// <param name="source">The source.</param>
@@ -273,18 +193,13 @@ public class EndorphinaController : ControllerBase
 	///             "username": "4ucmqplxb029"
 	///         }
 	/// </remarks>
-	[HttpPost("player/kick", Name = "PlayerKick")]
-	public ValueTask PlayerKickAsync(
-		[FromServices] ICommandService<PlayerKickCommand> service,
-		PlayerKickViewModel source)
-		=> service
-			.ExecuteAsync(
-				command: new PlayerKickCommand(
-					source.ApiUrl,
-					source.MerchantId,
-					source.SecretKey,
-					source.Username),
-				cancellationToken: HttpContext.RequestAborted);
+	[HttpPost("player/logout", Name = "PlayerLogout")]
+	public ValueTask PlayerLogoutAsync(
+		[FromServices] ICommandService<PlayerLogoutCommand> service,
+		PlayerLogoutCommand source)
+		=> service.ExecuteAsync(
+			command: source,
+			cancellationToken: HttpContext.RequestAborted);
 
 	/// <summary>
 	/// Games the session statistics asynchronous.
@@ -305,29 +220,12 @@ public class EndorphinaController : ControllerBase
 	///         }
 	/// </remarks>
 	[HttpPost("gameSessionStatistics")]
-	public async ValueTask<GameSessionStatisticsResultViewModel> GameSessionStatisticsAsync(
+	public ValueTask<GameSessionStatisticsInfo> GameSessionStatisticsAsync(
 		[FromServices] IGetService<GameSessionStatisticsQuery, GameSessionStatisticsInfo> service,
-		GameSessionStatisticsQueryViewModel source)
-	{
-		var result = await service.GetAsync(new GameSessionStatisticsQuery(
-			source.ApiUrl,
-			source.MerchantId,
-			source.SecretKey,
-			source.Token))
-		.ConfigureAwait(false);
-
-		return new GameSessionStatisticsResultViewModel
-		{
-			Bet = result.Bet,
-			Win = result.Win,
-			Games = result.Games,
-			JackpotWin = result.JackpotWin,
-			Jackpots = result.Jackpots,
-			Deposit = result.Deposit,
-			Withdraw = result.Withdraw,
-			ErrorsPending = result.ErrorsPending,
-		};
-	}
+		GameSessionStatisticsQuery source)
+		=> service.GetAsync(
+			query: source,
+			cancellationToken: HttpContext.RequestAborted);
 
 	/// <summary>
 	/// Games the session information asynchronous.
@@ -348,36 +246,18 @@ public class EndorphinaController : ControllerBase
 	///         }
 	/// </remarks>
 	[HttpPost("gameSessionInfo")]
-	public async ValueTask<GameSessionInfoResultViewModel> GameSessionInfoAsync(
+	public ValueTask<GameSessionInfo> GameSessionInfoAsync(
 		[FromServices] IGetService<GameSessionInfoQuery, GameSessionInfo> service,
-		GameSessionInfoQueryViewModel source)
-	{
-		var result = await service.GetAsync(new GameSessionInfoQuery(
-				source.ApiUrl,
-				source.MerchantId,
-				source.SecretKey,
-				source.Token),
-				HttpContext.RequestAborted)
-			.ConfigureAwait(false);
-
-		return new GameSessionInfoResultViewModel
-		{
-			Id = result.Id,
-			Username = result.Username,
-			GameName = result.GameName,
-			Currency = result.Currency,
-			AccountType = result.AccountType,
-			Created = result.Created,
-			Closed = result.Closed,
-			ErrorsPending = result.ErrorsPending,
-		};
-	}
+		GameSessionInfoQuery source)
+		=> service.GetAsync(
+			query: source,
+			cancellationToken: HttpContext.RequestAborted);
 
 	/// <summary>
 	/// Games the history settled asynchronous.
 	/// </summary>
 	/// <param name="service">The service.</param>
-	/// <param name="model">The model.</param>
+	/// <param name="source">The source.</param>
 	/// <returns></returns>
 	/// <remarks>
 	/// <b>Example</b><br />
@@ -392,34 +272,10 @@ public class EndorphinaController : ControllerBase
 	///         }
 	/// </remarks>
 	[HttpPost("game/history/settled", Name = "GameHistorySettled")]
-	public async ValueTask<GameHistorySettledResultViewModel> GameHistorySettledAsync(
+	public ValueTask<GameHistorySettledResult> GameHistorySettledAsync(
 		[FromServices] IGetService<GameHistorySettledQuery, GameHistorySettledResult> service,
-		GameHistorySettledViewModel model)
-	{
-		var query = new GameHistorySettledQuery(
-			ApiUrl: model.ApiUrl,
-			MerchantId: model.MerchantId,
-			SecretKey: model.SecretKey,
-			Token: model.Token);
-
-		var gameRecord = await service
-				.GetAsync(
-					query: query,
-					cancellationToken: HttpContext.RequestAborted)
-				.ConfigureAwait(false);
-
-		return new GameHistorySettledResultViewModel(
-				 PlayerCode: gameRecord.PlayerCode,
-				 ExternalRoundId: gameRecord.ExternalRoundId,
-				 IsClosed: gameRecord.IsClosed,
-				 ExternalCreatedOn: gameRecord.ExternalCreatedOn,
-				 ExternalClosedOn: gameRecord.ExternalClosedOn,
-				 Bet: gameRecord.Bet,
-				 ValidBet: gameRecord.ValidBet,
-				 PlayerWinLoss: gameRecord.PlayerWinLoss,
-				 Turnover: gameRecord.Turnover,
-				 Settle: gameRecord.Settle,
-				 AdditionalData: gameRecord.AdditionalData,
-				 ExternalGameId: gameRecord.ExternalGameId);
-	}
+		GameHistorySettledQuery source)
+		=> service.GetAsync(
+			query: source,
+			cancellationToken: HttpContext.RequestAborted);
 }

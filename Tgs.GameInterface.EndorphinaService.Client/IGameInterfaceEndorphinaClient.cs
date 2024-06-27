@@ -23,7 +23,7 @@ public interface IGameInterfaceEndorphinaClient
 		string currency,
 		CancellationToken cancellationToken = default);
 
-	ValueTask PlayerKickAsync(
+	ValueTask PlayerLogoutAsync(
 		Uri apiUrl,
 		string merchantId,
 		string secretKey,

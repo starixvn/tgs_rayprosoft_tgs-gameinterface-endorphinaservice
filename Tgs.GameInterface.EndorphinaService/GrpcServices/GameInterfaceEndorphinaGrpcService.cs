@@ -10,7 +10,7 @@ internal class GameInterfaceEndorphinaGrpcService(
 	ILogger<GameInterfaceEndorphinaGrpcService> logger,
 	ICommandService<PlayerCreateCommand> playerCreateService,
 	IGetService<PlayerBalanceQuery, PlayerBalanceResult> playerBalanceService,
-	ICommandService<PlayerKickCommand> playerKickService,
+	ICommandService<PlayerLogoutCommand> playerLogoutService,
 	IGetService<FundInQuery, FundResult> fundInService,
 	IGetService<FundOutQuery, FundResult> fundOutService,
 	IGetService<FundStatusQuery, bool> fundStatusService,
@@ -38,10 +38,9 @@ internal class GameInterfaceEndorphinaGrpcService(
 		   SecretKey: request.SecretKey,
 		   Username: request.Username);
 
-		await playerCreateService
-			.ExecuteAsync(
-				command: command,
-				cancellationToken: context.CancellationToken)
+		await playerCreateService.ExecuteAsync(
+			command: command,
+			cancellationToken: context.CancellationToken)
 			.ConfigureAwait(false);
 
 		return new BaseReply()
@@ -59,10 +58,9 @@ internal class GameInterfaceEndorphinaGrpcService(
 		   Username: request.Username,
 		   Currency: request.Currency);
 
-		var result = await playerBalanceService
-			.GetAsync(
-				query: query,
-				cancellationToken: context.CancellationToken)
+		var result = await playerBalanceService.GetAsync(
+			query: query,
+			cancellationToken: context.CancellationToken)
 			.ConfigureAwait(false);
 
 		return new PlayerBalanceReply()
@@ -72,18 +70,17 @@ internal class GameInterfaceEndorphinaGrpcService(
 		};
 	}
 
-	public override async Task<BaseReply> PlayerKick(PlayerKickRequest request, ServerCallContext context)
+	public override async Task<BaseReply> PlayerLogout(PlayerLogoutRequest request, ServerCallContext context)
 	{
-		var command = new PlayerKickCommand(
+		var command = new PlayerLogoutCommand(
 			ApiUrl: new(request.ApiUrl),
 			MerchantId: request.MerchantId,
 			SecretKey: request.SecretKey,
 			Username: request.Username);
 
-		await playerKickService
-			.ExecuteAsync(
-				command,
-				cancellationToken: context.CancellationToken)
+		await playerLogoutService.ExecuteAsync(
+			command,
+			cancellationToken: context.CancellationToken)
 			.ConfigureAwait(false);
 
 		return new BaseReply()
@@ -103,8 +100,9 @@ internal class GameInterfaceEndorphinaGrpcService(
 			RefTransactionCode: request.RefTransactionCode,
 			Amount: request.Amount);
 
-		var result = await fundInService
-			.GetAsync(query, cancellationToken: context.CancellationToken)
+		var result = await fundInService.GetAsync(
+			query: query,
+			cancellationToken: context.CancellationToken)
 			.ConfigureAwait(false);
 
 		return new FundReply()
@@ -112,7 +110,7 @@ internal class GameInterfaceEndorphinaGrpcService(
 			Balance = result.Balance,
 			RefTransactionCode = result.RefTransactionCode,
 			TransactionId = result.TransactionId,
-			Response = result.Response,
+			Resp = result.Resp,
 		};
 	}
 
@@ -127,8 +125,9 @@ internal class GameInterfaceEndorphinaGrpcService(
 			RefTransactionCode: request.RefTransactionCode,
 			Amount: request.Amount);
 
-		var result = await fundOutService
-			.GetAsync(query, cancellationToken: context.CancellationToken)
+		var result = await fundOutService.GetAsync(
+			query: query, 
+			cancellationToken: context.CancellationToken)
 			.ConfigureAwait(false);
 
 		return new FundReply()
@@ -136,7 +135,7 @@ internal class GameInterfaceEndorphinaGrpcService(
 			Balance = result.Balance,
 			RefTransactionCode = result.RefTransactionCode,
 			TransactionId = result.TransactionId,
-			Response = result.Response,
+			Resp = result.Resp,
 		};
 	}
 
@@ -148,8 +147,9 @@ internal class GameInterfaceEndorphinaGrpcService(
 			SecretKey: request.SecretKey,
 			TransactionId: request.TransactionId);
 
-		var result = await fundStatusService
-			.GetAsync(query, cancellationToken: context.CancellationToken)
+		var result = await fundStatusService.GetAsync(
+			query: query, 
+			cancellationToken: context.CancellationToken)
 			.ConfigureAwait(false);
 
 		return new FundStatusReply()
@@ -169,8 +169,9 @@ internal class GameInterfaceEndorphinaGrpcService(
 			Username: request.Username,
 			Language: request.Language);
 
-		var result = await gameUrlService
-			.GetAsync(query, cancellationToken: context.CancellationToken)
+		var result = await gameUrlService.GetAsync(
+			query: query, 
+			cancellationToken: context.CancellationToken)
 			.ConfigureAwait(false);
 
 		return new GameUrlReply()
@@ -189,8 +190,9 @@ internal class GameInterfaceEndorphinaGrpcService(
 			Currency: request.Currency,
 			Username: request.Username);
 
-		var result = await gameTokenService
-			.GetAsync(query, cancellationToken: context.CancellationToken)
+		var result = await gameTokenService.GetAsync(
+			query: query, 
+			cancellationToken: context.CancellationToken)
 			.ConfigureAwait(false);
 
 		return new GameTokenReply()
@@ -209,8 +211,9 @@ internal class GameInterfaceEndorphinaGrpcService(
 			SecretKey: request.SecretKey,
 			Token: request.Token);
 
-		var result = await gameHistoryService
-			.GetAsync(query, cancellationToken: context.CancellationToken)
+		var result = await gameHistoryService.GetAsync(
+			query: query, 
+			cancellationToken: context.CancellationToken)
 			.ConfigureAwait(false);
 
 		return new GameHistorySettledReply()
@@ -240,8 +243,9 @@ internal class GameInterfaceEndorphinaGrpcService(
 			SecretKey: request.SecretKey,
 			Token: request.Token);
 
-		var result = await gameSessionInfoService
-			.GetAsync(query, cancellationToken: context.CancellationToken)
+		var result = await gameSessionInfoService.GetAsync(
+			query: query,
+			cancellationToken: context.CancellationToken)
 			.ConfigureAwait(false);
 
 		return new GameSessionInfoReply()
@@ -267,8 +271,9 @@ internal class GameInterfaceEndorphinaGrpcService(
 			SecretKey: request.SecretKey,
 			Token: request.Token);
 
-		var result = await gameSessionStatisticsService
-			.GetAsync(query, cancellationToken: context.CancellationToken)
+		var result = await gameSessionStatisticsService.GetAsync(
+			query: query, 
+			cancellationToken: context.CancellationToken)
 			.ConfigureAwait(false);
 
 		return new GameSessionStatisticsReply()
