@@ -12,7 +12,7 @@ service  GameInterfaceEndorphinaService{
   // Sends a greeting
   rpc PlayerCreate (PlayerCreateRequest) returns (BaseReply);
   rpc PlayerBalance (PlayerBalanceRequest) returns (PlayerBalanceReply);
-  rpc PlayerKick (PlayerKickRequest) returns (BaseReply);
+  rpc PlayerLogout (PlayerLogoutRequest) returns (BaseReply);
   rpc FundIn (FundRequest) returns (FundReply);
   rpc FundOut (FundRequest) returns (FundReply);
   rpc FundStatus(FundStatusRequest) returns (FundStatusReply);  
@@ -40,7 +40,7 @@ message PlayerBalanceRequest {
 	string currency = 5;
 }
 
-message PlayerKickRequest {
+message PlayerLogoutRequest {
 	string api_url = 1;
 	string merchant_id = 2;
 	string secret_key = 3;
@@ -122,7 +122,7 @@ message FundReply {
 	string ref_transaction_code = 1;
     string transaction_id = 2;
     phoenix.protobuf.DecimalValue balance = 3;
-	string response = 4;
+	string resp = 4;
 }
 
 message FundStatusReply {

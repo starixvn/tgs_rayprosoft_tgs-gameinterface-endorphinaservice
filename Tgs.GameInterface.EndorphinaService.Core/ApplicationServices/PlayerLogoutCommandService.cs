@@ -2,9 +2,9 @@
 
 namespace Tgs.GameInterface.EndorphinaService.Core.ApplicationServices;
 
-internal class PlayerKickCommandService(IGameApiClient client) : ICommandService<PlayerKickCommand>
+internal class PlayerLogoutCommandService(IGameApiClient client) : ICommandService<PlayerLogoutCommand>
 {
-	public async ValueTask ExecuteAsync(PlayerKickCommand command, CancellationToken cancellationToken = default)
+	public async ValueTask ExecuteAsync(PlayerLogoutCommand command, CancellationToken cancellationToken = default)
 	{
 		_ = await client
 			.KickPlayerAsync(command.ApiUrl, command.MerchantId, command.SecretKey, command.Username, cancellationToken)

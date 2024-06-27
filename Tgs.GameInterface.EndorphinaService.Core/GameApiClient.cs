@@ -21,12 +21,12 @@ internal class GameApiClient(
 		var url = new Uri(apiUrl, $"/api/casino/player/{username}");
 
 		(bool IsSuccess, HttpStatusCode StatusCode, string ResponseMessage) = await PostJsonAsync(
-				url,
-				merchantId,
-				secretKey,
-				new Dictionary<string, string>(),
-				"PlayerRegistration",
-				cancellationToken).ConfigureAwait(false);
+				apiUrl: url,
+				merchantId: merchantId,
+				secretKey: secretKey,
+				parameters: [],
+				logPrefix: nameof(PlayerRegistrationAsync),
+				cancellationToken: cancellationToken).ConfigureAwait(false);
 
 		if (!IsSuccess)
 		{
@@ -55,12 +55,12 @@ internal class GameApiClient(
 		};
 
 		(bool IsSuccess, HttpStatusCode StatusCode, string ResponseMessage) = await PostFormAsync(
-			url,
-			merchantId,
-			secretKey,
-			parameters,
-			"Deposit",
-			cancellationToken).ConfigureAwait(false);
+			apiUrl: url,
+			merchantId: merchantId,
+			secretKey: secretKey,
+			parameters: parameters,
+			logPrefix: nameof(DepositAsync),
+			cancellationToken: cancellationToken).ConfigureAwait(false);
 
 		if (!IsSuccess)
 		{
@@ -103,12 +103,12 @@ internal class GameApiClient(
 		};
 
 		(bool IsSuccess, HttpStatusCode StatusCode, string ResponseMessage) = await PostFormAsync(
-			url,
-			merchantId,
-			secretKey,
-			parameters,
-			"Withdraw",
-			cancellationToken).ConfigureAwait(false);
+			apiUrl: url,
+			merchantId: merchantId,
+			secretKey: secretKey,
+			parameters: parameters,
+			logPrefix: nameof(WithdrawAsync),
+			cancellationToken: cancellationToken).ConfigureAwait(false);
 
 		if (!IsSuccess)
 		{
@@ -145,12 +145,12 @@ internal class GameApiClient(
 		var url = new Uri(apiUrl, $"/api/casino/payments/{transactionId}");
 
 		(bool IsSuccess, HttpStatusCode StatusCode, string ResponseMessage) = await GetAsync(
-			url,
-			merchantId,
-			secretKey,
-			new Dictionary<string, string>(),
-			"SinglePayment",
-			cancellationToken).ConfigureAwait(false);
+			apiUrl: url,
+			merchantId: merchantId,
+			secretKey: secretKey,
+			parameters: [],
+			logPrefix: nameof(SinglePaymentAsync),
+			cancellationToken: cancellationToken).ConfigureAwait(false);
 
 		if (!IsSuccess)
 		{
@@ -177,12 +177,12 @@ internal class GameApiClient(
 		var url = new Uri(apiUrl, $"/api/casino/player/{username}/accounts");
 
 		(bool IsSuccess, HttpStatusCode StatusCode, string ResponseMessage) = await GetAsync(
-			url,
-			merchantId,
-			secretKey,
-			new Dictionary<string, string>(),
-			"PlayerAccountsInfo",
-			cancellationToken).ConfigureAwait(false);
+			apiUrl: url,
+			merchantId: merchantId,
+			secretKey: secretKey,
+			parameters: [],
+			logPrefix: nameof(PlayerAccountsInfoAsync),
+			cancellationToken: cancellationToken).ConfigureAwait(false);
 
 		if (!IsSuccess)
 		{
@@ -210,7 +210,7 @@ internal class GameApiClient(
 		{
 			Balance = decimal.Parse(x!["balance"]!.ToString()),
 			Currency = x!["currency"]!.ToString()
-		}) ?? Enumerable.Empty<PlayerAccountsInfoResult>();
+		}) ?? [];
 
 		if (!results.Any())
 			return new PlayerBalanceResult(IsPlayerExist: true, Balance: null);
@@ -234,12 +234,12 @@ internal class GameApiClient(
 		};
 
 		(bool IsSuccess, HttpStatusCode StatusCode, string ResponseMessage) = await PostFormAsync(
-			url,
-			merchantId,
-			secretKey,
-			parameters,
-			"RequestSessionToken",
-			cancellationToken).ConfigureAwait(false);
+			apiUrl: url,
+			merchantId: merchantId,
+			secretKey: secretKey,
+			parameters: parameters,
+			logPrefix: nameof(RequestSessionTokenAsync),
+			cancellationToken: cancellationToken).ConfigureAwait(false);
 
 		if (!IsSuccess)
 		{
@@ -291,12 +291,12 @@ internal class GameApiClient(
 		var url = new Uri(apiUrl, $"/api/casino/kick/{username}");
 
 		(bool IsSuccess, HttpStatusCode StatusCode, string ResponseMessage) = await PostJsonAsync(
-			url,
-			merchantId,
-			secretKey,
-			new Dictionary<string, string>(),
-			"KickPlayer",
-			cancellationToken).ConfigureAwait(false);
+			apiUrl: url,
+			merchantId: merchantId,
+			secretKey: secretKey,
+			parameters: [],
+			logPrefix: nameof(KickPlayerAsync),
+			cancellationToken: cancellationToken).ConfigureAwait(false);
 
 		if (!IsSuccess)
 		{
@@ -323,12 +323,12 @@ internal class GameApiClient(
 		var url = new Uri(apiUrl, $"/api/casino/stats/{token}");
 
 		(bool IsSuccess, HttpStatusCode StatusCode, string ResponseMessage) = await GetAsync(
-			url,
-			merchantId,
-			secretKey,
-			new Dictionary<string, string>(),
-			"GameSessionStatistics",
-			cancellationToken).ConfigureAwait(false);
+			apiUrl: url,
+			merchantId: merchantId,
+			secretKey: secretKey,
+			parameters: [],
+			logPrefix: nameof(GameSessionStatisticsAsync),
+			cancellationToken: cancellationToken).ConfigureAwait(false);
 
 		if (!IsSuccess)
 		{
@@ -364,12 +364,12 @@ internal class GameApiClient(
 		var url = new Uri(apiUrl, $"/api/casino/sessions/{token}");
 
 		(bool IsSuccess, HttpStatusCode StatusCode, string ResponseMessage) = await GetAsync(
-			url,
-			merchantId,
-			secretKey,
-			new Dictionary<string, string>(),
-			"GameSessionInfo",
-			cancellationToken).ConfigureAwait(false);
+			apiUrl: url,
+			merchantId: merchantId,
+			secretKey: secretKey,
+			parameters: [],
+			logPrefix: nameof(GameSessionInfoAsync),
+			cancellationToken: cancellationToken).ConfigureAwait(false);
 
 		if (!IsSuccess)
 		{
@@ -407,8 +407,6 @@ internal class GameApiClient(
 
 	private async ValueTask<(bool IsSuccess, HttpStatusCode StatusCode, string ResponseMessage)> GetAsync(Uri apiUrl, string merchantId, string secretKey, IEnumerable<KeyValuePair<string, string>> parameters, string logPrefix, CancellationToken cancellationToken = default)
 	{
-		logPrefix = $"{nameof(GameApiClient)}.{logPrefix}".ToLower();
-
 		var sw = Stopwatch.StartNew();
 
 		var transactionId = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
@@ -446,7 +444,7 @@ internal class GameApiClient(
 				.ConfigureAwait(false) ?? string.Empty;
 		}
 
-		var apiLogEvent = new GameApiLogEvent
+		var apiLogEvent = new 
 		{
 			Path = httpResponseMessage.RequestMessage?.RequestUri?.AbsoluteUri.NoLongerThan(512) ?? string.Empty,
 			Method = httpResponseMessage.RequestMessage?.Method.ToString().NoLongerThan(8) ?? string.Empty,
@@ -468,8 +466,6 @@ internal class GameApiClient(
 
 	private async ValueTask<(bool IsSuccess, HttpStatusCode StatusCode, string ResponseMessage)> PostJsonAsync(Uri apiUrl, string merchantId, string secretKey, IEnumerable<KeyValuePair<string, string>> parameters, string logPrefix, CancellationToken cancellationToken = default)
 	{
-		logPrefix = $"{nameof(GameApiClient)}.{logPrefix}".ToLower();
-
 		var sw = Stopwatch.StartNew();
 
 		var transactionId = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
@@ -500,7 +496,7 @@ internal class GameApiClient(
 				.ConfigureAwait(false) ?? string.Empty;
 		}
 
-		var apiLogEvent = new GameApiLogEvent
+		var apiLogEvent = new 
 		{
 			Path = httpResponseMessage.RequestMessage?.RequestUri?.AbsoluteUri.NoLongerThan(512) ?? string.Empty,
 			Method = httpResponseMessage.RequestMessage?.Method.ToString().NoLongerThan(8) ?? string.Empty,
@@ -522,8 +518,6 @@ internal class GameApiClient(
 
 	private async ValueTask<(bool IsSuccess, HttpStatusCode StatusCode, string ResponseMessage)> PostFormAsync(Uri apiUrl, string merchantId, string secretKey, IEnumerable<KeyValuePair<string, string>> parameters, string logPrefix, CancellationToken cancellationToken = default)
 	{
-		logPrefix = $"{nameof(GameApiClient)}.{logPrefix}".ToLower();
-
 		var sw = Stopwatch.StartNew();
 
 		var transactionId = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
@@ -554,7 +548,7 @@ internal class GameApiClient(
 				.ConfigureAwait(false) ?? string.Empty;
 		}
 
-		var apiLogEvent = new GameApiLogEvent
+		var apiLogEvent = new 
 		{
 			Path = httpResponseMessage.RequestMessage?.RequestUri?.AbsoluteUri.NoLongerThan(512) ?? string.Empty,
 			Method = httpResponseMessage.RequestMessage?.Method.ToString().NoLongerThan(8) ?? string.Empty,

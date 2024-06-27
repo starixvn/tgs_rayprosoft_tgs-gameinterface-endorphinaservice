@@ -161,14 +161,14 @@ internal class GameInterfaceEndorphinaClient(GameInterfaceEndorphinaService.Game
 			.ConfigureAwait(false);
 	}
 
-	public async ValueTask PlayerKickAsync(
+	public async ValueTask PlayerLogoutAsync(
 		Uri apiUrl,
 		string merchantId,
 		string secretKey,
 		string username,
 		CancellationToken cancellationToken = default)
 	{
-		var request = new PlayerKickRequest
+		var request = new PlayerLogoutRequest
 		{
 			ApiUrl = apiUrl.ToString(),
 			MerchantId = merchantId,
@@ -176,8 +176,9 @@ internal class GameInterfaceEndorphinaClient(GameInterfaceEndorphinaService.Game
 			Username = username,
 		};
 
-		_ = await client
-			.PlayerKickAsync(request, cancellationToken: cancellationToken)
+		_ = await client.PlayerLogoutAsync(
+			request: request,
+			cancellationToken: cancellationToken)
 			.ConfigureAwait(false);
 	}
 
